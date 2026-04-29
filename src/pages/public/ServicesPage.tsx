@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Trophy, Mic2, Sword, BarChart3, Users, Calendar, Award } from 'lucide-react';
+import { Mic2, Sword, BarChart3, Users, Calendar, Award } from 'lucide-react';
 import { motion } from 'framer-motion';
 import PublicNav from '../../components/layout/PublicNav';
 import Footer from '../../components/layout/Footer';
@@ -106,3 +106,4 @@ const ServicesPage = () => (
 );
 
 export default ServicesPage;
+

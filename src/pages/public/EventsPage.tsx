@@ -15,7 +15,7 @@ const EventsPage = () => {
       try {
         const data = await eventService.getEvents();
         setEvents(data);
-      } catch (err) {
+      } catch (_err) {
         console.error('Failed to fetch events');
       } finally {
         setIsLoading(false);

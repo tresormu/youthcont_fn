@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import authService from '../../services/authService';
-import { Trophy, ArrowRight, Mail, Lock, Mic2, GitBranch, BarChart3 } from 'lucide-react';
+import { ArrowRight, Mail, Lock, Mic2, GitBranch, BarChart3 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { GlassInput } from '../../components/ui/GlassInput';
 
@@ -193,3 +193,4 @@ const LoginPage = () => {
 };
 
 export default LoginPage;
+

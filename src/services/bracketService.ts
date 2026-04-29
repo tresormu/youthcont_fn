@@ -6,8 +6,8 @@ export const bracketService = {
     return response.data;
   },
 
-  generateBracket: async (eventId: string) => {
-    const response = await api.post(`/events/${eventId}/bracket/generate`);
+  generateBracket: async (eventId: string, teamIds?: string[]) => {
+    const response = await api.post(`/events/${eventId}/bracket/generate`, teamIds ? { teamIds } : {});
     return response.data;
   },
 

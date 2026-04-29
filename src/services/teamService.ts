@@ -32,6 +32,13 @@ export const teamService = {
     });
     return response.data;
   },
+
+  exportRankingsPDF: async (eventId: string) => {
+    const response = await api.get(`/events/${eventId}/rankings/pdf`, {
+      responseType: 'blob',
+    });
+    return response.data;
+  },
 };
 
 export default teamService;

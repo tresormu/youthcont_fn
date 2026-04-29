@@ -12,7 +12,7 @@ const ContactPage = () => {
     e.preventDefault();
     setStatus('loading');
     try {
-      await contactService.submitInquiry(form);
+      await contactService.submitContact(form);
       setStatus('success');
       setForm({ email: '', phone: '', reason: 'General Inquiry' as string, message: '' });
     } catch {
@@ -136,3 +136,4 @@ const ContactPage = () => {
 };
 
 export default ContactPage;
+

@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import schoolService from '../../services/schoolService';
 import teamService from '../../services/teamService';
 import publicSpeakerService from '../../services/publicSpeakerService';
-import api from '../../services/api'; // Keep for custom updates if needed
+import api from '../../services/api';
 import { UserPlus, Mic2, Trash2, ChevronLeft, Plus, Save, CheckCircle2, Shield } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ConfirmModal } from '../../components/common/ConfirmModal';
@@ -37,15 +37,12 @@ const SchoolDetailsPage = () => {
   const fetchData = async () => {
     if (!schoolId) return;
     try {
-      // Note: Backend might need a getSchoolById endpoint, currently using schoolRoutes /events/:eventId/schools/:schoolId
-      // Actually, looking at schoolRoutes, there's no direct GET /schools/:schoolId.
-      // I'll assume it exists or use api for now if it doesn't.
       const [schoolRes, teamsData, speakersData] = await Promise.all([
-        api.get(`/schools/${schoolId}`), // Fallback to direct api if service not defined
+        schoolService.getSchoolById(schoolId),
         teamService.getTeams(schoolId),
         publicSpeakerService.getSpeakers(schoolId),
       ]);
-      setSchool(schoolRes.data);
+      setSchool(schoolRes);
       setTeams(teamsData);
       setPublicSpeakers(speakersData);
       const drafts: Record<string, Record<number, string>> = {};
@@ -298,3 +295,4 @@ const SchoolDetailsPage = () => {
 };
 
 export default SchoolDetailsPage;
+

@@ -9,13 +9,10 @@ import fun1 from '../../assets/fun1.jpeg';
 import fun2 from '../../assets/fun2.jpeg';
 import fun3 from '../../assets/fun3.jpeg';
 import fun4 from '../../assets/fun4.jpeg';
-import win1 from '../../assets/win1.jpeg';
 import win2 from '../../assets/win2.jpeg';
 import p1 from '../../assets/participant1.jpeg';
-import p2 from '../../assets/participant2.jpeg';
 import staff1 from '../../assets/staff1.jpeg';
 import staff2 from '../../assets/staff2.jpeg';
-import staff3 from '../../assets/staff3.jpeg';
 import staff4 from '../../assets/staff4.jpeg';
 import staffcover from '../../assets/staffcover.jpeg';
 
@@ -309,3 +306,4 @@ const PublicLandingPage = () => (
 );
 
 export default PublicLandingPage;
+

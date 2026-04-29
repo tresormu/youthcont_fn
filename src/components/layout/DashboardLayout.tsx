@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { Outlet, NavLink, useParams, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import {
-  Trophy, Calendar, Users, Sword, GitBranch, BarChart3, LogOut,
-  ChevronLeft, ChevronRight, Menu, X, Bell, UserCog
+  Calendar, Users, Sword, GitBranch, BarChart3, LogOut,
+  ChevronLeft, ChevronRight, Menu, X, Bell, UserCog, KeyRound
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../../utils/cn';
@@ -91,6 +91,7 @@ const DashboardLayout = () => {
             )}
             {collapsed && <div className="my-3 h-px bg-border/50 mx-2" />}
             <SidebarLink to="/dashboard/staff" icon={UserCog} label="Staff Management" collapsed={collapsed} />
+            <SidebarLink to={eventId ? `/dashboard/events/${eventId}/grant-access` : '/dashboard/events'} icon={KeyRound} label="Grant School Access" collapsed={collapsed} />
           </>
         )}
       </div>

@@ -1,6 +1,11 @@
 import api from './api';
 
 export const schoolService = {
+  getSchoolById: async (schoolId: string) => {
+    const response = await api.get(`/schools/${schoolId}`);
+    return response.data;
+  },
+
   getSchools: async (eventId: string) => {
     const response = await api.get(`/events/${eventId}/schools`);
     return response.data;

@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Trophy, ArrowLeft, Users, Send, MessageSquare, Heart } from 'lucide-react';
+import { ArrowLeft, Send, MessageSquare, Heart } from 'lucide-react';
 import { motion } from 'framer-motion';
 import PublicNav from '../../components/layout/PublicNav';
 import Footer from '../../components/layout/Footer';
@@ -121,3 +121,4 @@ const ParticipantsPage = () => (
 );
 
 export default ParticipantsPage;
+

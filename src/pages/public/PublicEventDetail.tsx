@@ -22,7 +22,7 @@ const PublicEventDetail = () => {
     fetchData();
     
     if (socket) {
-      socket.emit('join:event', eventId);
+      socket.emit('joinEvent', eventId);
       socket.on('match:updated', () => fetchData());
       socket.on('bracket:updated', () => fetchData());
       socket.on('event:statusChanged', (data: any) => setEvent((prev: any) => ({ ...prev, status: data.status })));

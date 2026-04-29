@@ -41,8 +41,18 @@ export const matchService = {
     return response.data;
   },
 
+  updatePairing: async (matchId: string, data: { teamAId: string; teamBId: string }) => {
+    const response = await api.patch(`/matches/${matchId}/pairing`, data);
+    return response.data;
+  },
+
   voidResult: async (matchId: string) => {
     const response = await api.patch(`/matches/${matchId}/void`);
+    return response.data;
+  },
+
+  generateBracket: async (eventId: string, teamIds?: string[]) => {
+    const response = await api.post(`/events/${eventId}/bracket/generate`, teamIds ? { teamIds } : {});
     return response.data;
   },
 };

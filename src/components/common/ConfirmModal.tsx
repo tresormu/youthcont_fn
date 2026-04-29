@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { AlertTriangle, CheckCircle2, X } from 'lucide-react';
+import type { ReactNode } from 'react';
 
 interface ConfirmModalProps {
   open: boolean;
@@ -11,12 +12,13 @@ interface ConfirmModalProps {
   cancelLabel?: string;
   variant?: 'danger' | 'confirm';
   loading?: boolean;
+  children?: ReactNode;
 }
 
 export function ConfirmModal({
   open, onClose, onConfirm, title, message,
   confirmLabel = 'Confirm', cancelLabel = 'Cancel',
-  variant = 'confirm', loading = false
+  variant = 'confirm', loading = false, children
 }: ConfirmModalProps) {
   return (
     <AnimatePresence>
@@ -52,24 +54,26 @@ export function ConfirmModal({
             <h2 className="text-2xl font-black text-primary mb-2">{title}</h2>
             <p className="text-sm font-medium text-primary/50 mb-8 leading-relaxed">{message}</p>
 
-            <div className="flex gap-3">
-              <button
-                onClick={onClose}
-                className="flex-1 py-4 rounded-2xl font-black text-sm text-primary/40 hover:bg-secondary transition-all"
-              >
-                {cancelLabel}
-              </button>
-              <button
-                onClick={onConfirm}
-                disabled={loading}
-                className={`flex-[2] py-4 rounded-2xl font-black text-sm text-white transition-all disabled:opacity-50 shadow-lg
-                  ${variant === 'danger' ? 'bg-destructive hover:bg-destructive/90 shadow-destructive/20' : 'bg-accent hover:bg-accent/90 shadow-accent/20'}`}
-              >
-                {loading ? (
-                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin mx-auto" />
-                ) : confirmLabel}
-              </button>
-            </div>
+            {children ? children : (
+              <div className="flex gap-3">
+                <button
+                  onClick={onClose}
+                  className="flex-1 py-4 rounded-2xl font-black text-sm text-primary/40 hover:bg-secondary transition-all"
+                >
+                  {cancelLabel}
+                </button>
+                <button
+                  onClick={onConfirm}
+                  disabled={loading}
+                  className={`flex-[2] py-4 rounded-2xl font-black text-sm text-white transition-all disabled:opacity-50 shadow-lg
+                    ${variant === 'danger' ? 'bg-destructive hover:bg-destructive/90 shadow-destructive/20' : 'bg-accent hover:bg-accent/90 shadow-accent/20'}`}
+                >
+                  {loading ? (
+                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin mx-auto" />
+                  ) : confirmLabel}
+                </button>
+              </div>
+            )}
           </motion.div>
         </div>
       )}

@@ -22,6 +22,9 @@ import ServicesPage from './pages/public/ServicesPage';
 import StaffPage from './pages/public/StaffPage';
 import EventsPage from './pages/public/EventsPage';
 import ParticipantsPage from './pages/public/ParticipantsPage';
+import SchoolOwnerLoginPage from './pages/public/SchoolOwnerLoginPage';
+import SchoolReportDashboard from './pages/public/SchoolReportDashboard';
+import GrantSchoolAccessPage from './pages/dashboard/GrantSchoolAccessPage';
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { isAuthenticated, loading } = useAuth();
@@ -56,6 +59,8 @@ function AppRoutes() {
         <Route path="/blog" element={<BlogPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/activate" element={<ActivatePage />} />
+        <Route path="/school-report" element={<SchoolOwnerLoginPage />} />
+        <Route path="/school-report/dashboard" element={<SchoolReportDashboard />} />
 
         <Route path="/dashboard" element={
           <ProtectedRoute>
@@ -72,6 +77,11 @@ function AppRoutes() {
           <Route path="staff" element={
             <AdminRoute>
               <StaffManagementPage />
+            </AdminRoute>
+          } />
+          <Route path="events/:eventId/grant-access" element={
+            <AdminRoute>
+              <GrantSchoolAccessPage />
             </AdminRoute>
           } />
         </Route>

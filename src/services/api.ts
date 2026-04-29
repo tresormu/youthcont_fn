@@ -32,8 +32,11 @@ api.interceptors.response.use(
     if (response?.status === 401) {
       const isDashboard = window.location.pathname.startsWith('/dashboard');
       const isLoginPage = window.location.pathname.includes('/login');
+      const isSchoolReport = window.location.pathname.startsWith('/school-report');
       if (isDashboard && !isLoginPage) {
         window.location.href = '/login';
+      } else if (isSchoolReport && window.location.pathname !== '/school-report') {
+        window.location.href = '/school-report';
       }
     }
 

@@ -14,6 +14,8 @@ interface School {
   region?: string;
   teams: any[];
   publicSpeakers: any[];
+  teamCount?: number;
+  publicSpeakerCount?: number;
 }
 
 const RegistrationPage = () => {
@@ -31,9 +33,7 @@ const RegistrationPage = () => {
   const [adding, setAdding] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<School | null>(null);
   const [deleting, setDeleting] = useState(false);
-  const [advanceConfirm, setAdvanceConfirm] = useState(false);
-  const [assignmentMode, setAssignmentMode] = useState<'manual' | 'auto' | null>(null);
-  const [advancing, setAdvancing] = useState(false);
+  const [advanceConfirm, setAdvanceConfirm] = useState(false);  const [advancing, setAdvancing] = useState(false);
   const { socket } = useSocket();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -104,21 +104,29 @@ const RegistrationPage = () => {
     if (!eventId) return;
     setAdvancing(true);
     try {
-      await eventService.updateStatus(eventId, 'Preliminary Rounds');
-      toast(`Advanced to Preliminary Rounds (${mode})!`);
+      if (event?.status !== 'Preliminary Rounds') {
+        await eventService.updateStatus(eventId, 'Preliminary Rounds');
+        toast(`Advanced to Preliminary Rounds (${mode})!`);
+      } else {
+        toast(`Opening Preliminary Rounds (${mode})...`);
+      }
       navigate(`/dashboard/events/${eventId}/matchmaking?mode=${mode}`);
-    } catch {
-      toast('Failed to advance stage', 'error');
+    } catch (err: any) {
+      const message = err?.response?.data?.message || '';
+      if (message.includes('Cannot transition from "Preliminary Rounds" to "Preliminary Rounds"')) {
+        toast(`Opening Preliminary Rounds (${mode})...`);
+        navigate(`/dashboard/events/${eventId}/matchmaking?mode=${mode}`);
+      } else {
+        toast('Failed to advance stage', 'error');
+      }
     } finally {
       setAdvancing(false);
-      setAdvanceConfirm(false);
-      setAssignmentMode(null);
-    }
+      setAdvanceConfirm(false);    }
   };
 
 
-  const totalTeams = schools.reduce((acc, s) => acc + (s.teams?.length || 0), 0);
-  const totalSpeakers = schools.reduce((acc, s) => acc + (s.publicSpeakers?.length || 0), 0);
+  const totalTeams = schools.reduce((acc, s) => acc + (s.teamCount ?? s.teams?.length ?? 0), 0);
+  const totalSpeakers = schools.reduce((acc, s) => acc + (s.publicSpeakerCount ?? s.publicSpeakers?.length ?? 0), 0);
 
   return (
     <div className="space-y-8 pb-20">
@@ -192,9 +200,9 @@ const RegistrationPage = () => {
 
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3 text-[10px] font-black text-primary/40 uppercase tracking-widest">
-                        <span>{school.teams?.length || 0}/3 Teams</span>
+                        <span>{school.teamCount ?? school.teams?.length ?? 0}/3 Teams</span>
                         <span className="w-1 h-1 rounded-full bg-primary/20" />
-                        <span>{school.publicSpeakers?.length || 0}/5 Speakers</span>
+                        <span>{school.publicSpeakerCount ?? school.publicSpeakers?.length ?? 0}/5 Speakers</span>
                       </div>
                       <button
                         onClick={() => navigate(`/dashboard/schools/${school._id}/teams`)}
@@ -441,3 +449,4 @@ const RegistrationPage = () => {
 };
 
 export default RegistrationPage;
+

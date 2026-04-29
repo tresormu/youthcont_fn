@@ -3,12 +3,13 @@ import { useParams, useNavigate } from 'react-router-dom';
 import teamService from '../../services/teamService';
 import bracketService from '../../services/bracketService';
 import { useSocket } from '../../context/SocketContext';
-import { Search, Trophy, Medal, Star, DownloadCloud } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { Search, Trophy, Medal, Star, FileSpreadsheet, FileText } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { useToast } from '../../components/common/Toast';
 import { ConfirmModal } from '../../components/common/ConfirmModal';
 
 interface RankingEntry {
+  _id: string;
   rank: number;
   teamName: string;
   school: string;
@@ -34,7 +35,8 @@ const RankingsPage = () => {
   const [selectedTeams, setSelectedTeams] = useState<string[]>([]);
   const [showBracketModal, setShowBracketModal] = useState(false);
   const [advancing, setAdvancing] = useState(false);
-  const [exporting, setExporting] = useState(false);
+  const [exportingPDF, setExportingPDF] = useState(false);
+  const [exportingExcel, setExportingExcel] = useState(false);
   const navigate = useNavigate();
   const { socket } = useSocket();
   const { toast } = useToast();
@@ -42,7 +44,7 @@ const RankingsPage = () => {
   useEffect(() => {
     fetchRankings();
     if (socket) {
-      socket.emit('join:event', eventId);
+      socket.emit('joinEvent', eventId);
       socket.on('match:updated', fetchRankings);
       socket.on('bracket:updated', fetchRankings);
       return () => { socket.off('match:updated'); socket.off('bracket:updated'); };
@@ -85,9 +87,9 @@ const RankingsPage = () => {
     }
   };
 
-  const handleExport = async () => {
+  const handleExportExcel = async () => {
     if (!eventId) return;
-    setExporting(true);
+    setExportingExcel(true);
     try {
       const blob = await teamService.exportRankings(eventId);
       const url = window.URL.createObjectURL(blob);
@@ -97,9 +99,28 @@ const RankingsPage = () => {
       document.body.appendChild(link);
       link.click();
       link.remove();
-      toast('Export started!');
-    } catch { toast('Failed to export', 'error'); }
-    finally { setExporting(false); }
+      window.URL.revokeObjectURL(url);
+      toast('Excel exported!');
+    } catch { toast('Failed to export Excel', 'error'); }
+    finally { setExportingExcel(false); }
+  };
+
+  const handleExportPDF = async () => {
+    if (!eventId) return;
+    setExportingPDF(true);
+    try {
+      const blob = await teamService.exportRankingsPDF(eventId);
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `rankings-${eventId}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+      toast('PDF exported!');
+    } catch { toast('Failed to export PDF', 'error'); }
+    finally { setExportingPDF(false); }
   };
 
 
@@ -128,12 +149,20 @@ const RankingsPage = () => {
             </button>
           )}
           <button
-            onClick={handleExport}
-            disabled={exporting || rankings.length === 0}
-            className="px-7 py-3.5 rounded-2xl font-black text-xs text-primary/60 hover:bg-white hover:text-accent border border-border transition-all flex items-center gap-3 disabled:opacity-50"
+            onClick={handleExportPDF}
+            disabled={exportingPDF || rankings.length === 0}
+            className="px-5 py-3.5 rounded-2xl font-black text-xs text-primary/60 hover:bg-white hover:text-red-500 border border-border transition-all flex items-center gap-2 disabled:opacity-50"
           >
-            <DownloadCloud size={18} />
-            Export Excel
+            <FileText size={16} />
+            {exportingPDF ? 'Exporting...' : 'PDF'}
+          </button>
+          <button
+            onClick={handleExportExcel}
+            disabled={exportingExcel || rankings.length === 0}
+            className="px-5 py-3.5 rounded-2xl font-black text-xs text-primary/60 hover:bg-white hover:text-emerald-600 border border-border transition-all flex items-center gap-2 disabled:opacity-50"
+          >
+            <FileSpreadsheet size={16} />
+            {exportingExcel ? 'Exporting...' : 'Excel'}
           </button>
         </div>
       </div>
@@ -225,14 +254,14 @@ const RankingsPage = () => {
               <tbody className="divide-y divide-border/30">
                 {filtered.map((team, idx) => (
                   <tr 
-                    key={`${team.teamName}-${idx}`} 
-                    onClick={() => toggleTeamSelection(team.teamName)} // Using name as ID for mock
-                    className={`hover:bg-accent/3 transition-all group cursor-pointer ${selectedTeams.includes(team.teamName) ? 'bg-accent/5' : ''}`}
+                    key={team._id} 
+                    onClick={() => toggleTeamSelection(team._id)}
+                    className={`hover:bg-accent/3 transition-all group cursor-pointer ${selectedTeams.includes(team._id) ? 'bg-accent/5' : ''}`}
                   >
                     <td className="px-7 py-5">
                       <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all
-                        ${selectedTeams.includes(team.teamName) ? 'bg-accent border-accent text-white' : 'border-border'}`}>
-                        {selectedTeams.includes(team.teamName) && <Star size={10} fill="currentColor" />}
+                        ${selectedTeams.includes(team._id) ? 'bg-accent border-accent text-white' : 'border-border'}`}>
+                        {selectedTeams.includes(team._id) && <Star size={10} fill="currentColor" />}
                       </div>
                     </td>
                     <td className="px-7 py-5">
@@ -315,3 +344,4 @@ const RankingsPage = () => {
 };
 
 export default RankingsPage;
+

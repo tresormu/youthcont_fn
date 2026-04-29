@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Trophy, Mail, Phone, Globe, Share2, Rss } from 'lucide-react';
+import { Mail, Phone, Globe, Share2, Rss } from 'lucide-react';
 
 const Footer = () => (
   <footer className="bg-primary text-white">

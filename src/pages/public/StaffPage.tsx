@@ -1,4 +1,4 @@
-import { Trophy, Users, Shield, Headphones } from 'lucide-react';
+import { Users, Shield, Headphones } from 'lucide-react';
 import { motion } from 'framer-motion';
 import PublicNav from '../../components/layout/PublicNav';
 import Footer from '../../components/layout/Footer';
@@ -159,3 +159,4 @@ const StaffPage = () => (
 );
 
 export default StaffPage;
+
