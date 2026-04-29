@@ -63,7 +63,6 @@ const MatchmakingPage = () => {
   const [showBest8Pipeline, setShowBest8Pipeline] = useState(false);
   const [pipelineStep, setPipelineStep] = useState<'idle' | 'sorting' | 'top8' | 'done'>('idle');
   const [top8, setTop8] = useState<Team[]>([]);
-  const [seed8, setSeed8] = useState<Team[]>([]);
   
   const [bracket, setBracket] = useState<Record<string, Match[]>>({});
 
@@ -233,10 +232,9 @@ const MatchmakingPage = () => {
       const rankings = await teamService.getRankings(eventId);
       const best = rankings.slice(0, advanceCount);
       setTop8(best);
-      setSeed8(best);
       
       // Auto generate bracket seeds for R16 or QF directly on the backend
-      await matchService.generateBracket(eventId, best.map(t => t._id));
+      await matchService.generateBracket(eventId, best.map((t: Team) => t._id));
 
       setTimeout(() => setPipelineStep('top8'), 1200);
       setTimeout(() => setPipelineStep('done'), 2400);

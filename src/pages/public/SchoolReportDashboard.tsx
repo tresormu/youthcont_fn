@@ -190,10 +190,15 @@ const SchoolReportDashboard = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
   const [exportingPDF, setExportingPDF] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(0);
 
   useEffect(() => {
     schoolReportService.getDashboard()
-      .then(setData)
+      .then(d => {
+        setData(d);
+        const expires = new Date(d.expires_at).getTime();
+        setTimeLeft(Math.max(0, Math.floor((expires - Date.now()) / (1000 * 60 * 60))));
+      })
       .catch(err => {
         if (err.response?.status === 401) navigate('/school-report');
         else setError(err.response?.data?.message || 'Failed to load report');
@@ -244,7 +249,6 @@ const SchoolReportDashboard = () => {
   if (!data) return null;
 
   const expiresAt = new Date(data.expires_at);
-  const timeLeft = Math.max(0, Math.floor((expiresAt.getTime() - Date.now()) / (1000 * 60 * 60)));
 
   return (
     <div className="min-h-screen" style={{ background: 'linear-gradient(160deg, #f8fafc 0%, #e2e8f0 100%)' }}>

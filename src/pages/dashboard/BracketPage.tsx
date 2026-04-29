@@ -37,8 +37,7 @@ const BracketPage = () => {
   const [bracket, setBracket] = useState<Record<string, Match[]>>({});
   const [isLoading, setIsLoading] = useState(true);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [searchParams] = useSearchParams();
-  const mode = searchParams.get('mode') || 'auto';
+  const [_searchParams] = useSearchParams();
   const { socket } = useSocket();
   const { toast } = useToast();
 
