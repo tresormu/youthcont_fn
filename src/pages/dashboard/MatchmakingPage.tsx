@@ -1,11 +1,11 @@
 import { useState, useEffect, useMemo } from 'react';
-import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import matchService from '../../services/matchService';
 import schoolService from '../../services/schoolService';
 import teamService from '../../services/teamService';
 import bracketService from '../../services/bracketService';
 import { useSocket } from '../../context/SocketContext';
-import { Sword, RotateCcw, Plus, ArrowRight, Trophy, Sparkles, CheckCircle2, ChevronDown, X } from 'lucide-react';
+import { Sword, RotateCcw, ArrowRight, Trophy, Sparkles, CheckCircle2, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ConfirmModal } from '../../components/common/ConfirmModal';
 import { useToast } from '../../components/common/Toast';
