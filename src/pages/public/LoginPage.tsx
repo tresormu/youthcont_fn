@@ -15,11 +15,8 @@ const LoginPage = () => {
   const navigate = useNavigate();
 
   React.useEffect(() => {
-    if (isAuthenticated) {
-      navigate('/dashboard/events');
-    }
+    if (isAuthenticated) navigate('/dashboard/events');
   }, [isAuthenticated, navigate]);
-
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,39 +37,37 @@ const LoginPage = () => {
     }
   };
 
-
   return (
-    <div className="flex h-screen w-full bg-background overflow-hidden relative">
+    <div className="min-h-screen w-full bg-background flex flex-col lg:flex-row overflow-x-hidden">
       {/* Decorative blobs */}
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-accent/10 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-primary/10 rounded-full blur-[120px] pointer-events-none" />
 
-      {/* Left: Form */}
-      <div className="flex-1 flex flex-col justify-center px-8 md:px-16 lg:px-24 z-10">
+      {/* Form side */}
+      <div className="flex-1 flex flex-col justify-center px-5 sm:px-10 md:px-16 lg:px-24 py-12 sm:py-16 z-10 relative">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="max-w-md w-full space-y-8"
+          className="max-w-md w-full mx-auto space-y-7"
         >
-          {/* Logo */}
           <div className="flex items-center gap-3">
-            <img src="/LOGO.jpeg" alt="Youth Contest" className="w-12 h-12 object-contain" />
+            <img src="/LOGO.jpeg" alt="Youth Contest" className="w-10 h-10 sm:w-12 sm:h-12 object-contain" />
             <div>
-              <span className="text-xl font-black tracking-tighter text-primary block leading-none">YOUTH CONTEST</span>
+              <span className="text-lg sm:text-xl font-black tracking-tighter text-primary block leading-none">YOUTH CONTEST</span>
               <span className="text-[10px] font-black uppercase tracking-[0.2em] text-accent">Staff Portal</span>
             </div>
           </div>
 
           <div className="space-y-2">
-            <h1 className="text-4xl md:text-5xl font-black text-primary tracking-tight leading-tight">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-primary tracking-tight leading-tight">
               Welcome Back
             </h1>
-            <p className="text-muted-foreground font-medium">
+            <p className="text-muted-foreground font-medium text-sm sm:text-base">
               Securely access your tournament management dashboard.
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-5 pt-2">
+          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
             <GlassInput
               label="Email Address"
               type="email"
@@ -98,7 +93,7 @@ const LoginPage = () => {
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: 'auto' }}
                   exit={{ opacity: 0, height: 0 }}
-                  className="px-5 py-4 rounded-2xl bg-destructive/8 border border-destructive/20 text-destructive text-sm font-bold"
+                  className="px-4 py-3 rounded-2xl bg-destructive/8 border border-destructive/20 text-destructive text-sm font-bold"
                 >
                   {error}
                 </motion.div>
@@ -108,7 +103,7 @@ const LoginPage = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-primary text-white font-black py-4 rounded-2xl shadow-xl shadow-primary/20 hover:shadow-primary/40 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-3 uppercase tracking-widest text-xs disabled:opacity-60 disabled:scale-100 mt-2"
+              className="w-full bg-primary text-white font-black py-4 rounded-2xl shadow-xl shadow-primary/20 hover:shadow-primary/40 active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-3 uppercase tracking-widest text-xs disabled:opacity-60"
             >
               {isLoading ? (
                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -121,7 +116,7 @@ const LoginPage = () => {
             </button>
           </form>
 
-          <p className="text-center text-xs text-muted-foreground pt-2">
+          <p className="text-center text-xs text-muted-foreground">
             First time here?{' '}
             <button onClick={() => navigate('/activate')} className="text-accent font-bold hover:underline">
               Activate your account
@@ -134,7 +129,7 @@ const LoginPage = () => {
         </motion.div>
       </div>
 
-      {/* Right: Visual panel */}
+      {/* Visual panel — hidden on mobile/tablet */}
       <div className="hidden lg:flex flex-1 relative bg-primary items-center justify-center p-12 overflow-hidden">
         <div className="absolute inset-0 opacity-5"
           style={{
@@ -146,11 +141,7 @@ const LoginPage = () => {
         <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/5 rounded-full blur-[60px]" />
 
         <div className="relative z-10 w-full max-w-lg space-y-10">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-          >
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 border border-white/20 rounded-full text-white/70 text-[10px] font-black uppercase tracking-[0.2em] mb-8">
               Tournament Management Platform
             </div>
@@ -193,4 +184,3 @@ const LoginPage = () => {
 };
 
 export default LoginPage;
-

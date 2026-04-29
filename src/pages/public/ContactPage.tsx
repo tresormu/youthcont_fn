@@ -14,76 +14,75 @@ const ContactPage = () => {
     try {
       await contactService.submitContact(form);
       setStatus('success');
-      setForm({ email: '', phone: '', reason: 'General Inquiry' as string, message: '' });
+      setForm({ email: '', phone: '', reason: 'General Inquiry', message: '' });
     } catch {
       setStatus('error');
     }
   };
 
-
   return (
     <div className="min-h-screen bg-background">
       <PublicNav />
 
-      <div className="max-w-4xl mx-auto px-6 py-20">
-        <div className="mb-12 text-center">
-          <h1 className="text-5xl font-black text-primary mb-4">Get In Touch</h1>
-          <p className="text-primary/40 font-bold text-lg">Have questions? We'd love to hear from you.</p>
+      <div className="max-w-3xl mx-auto px-5 sm:px-6 py-10 sm:py-16">
+        <div className="mb-10 sm:mb-12 text-center">
+          <h1 className="text-3xl sm:text-5xl font-black text-primary mb-3">Get In Touch</h1>
+          <p className="text-primary/40 font-bold text-base sm:text-lg">Have questions? We'd love to hear from you.</p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8 mb-12">
-          <div className="bg-white border border-border/50 rounded-3xl p-8 flex items-start gap-4">
-            <div className="w-12 h-12 bg-accent/10 rounded-xl flex items-center justify-center text-accent flex-shrink-0">
-              <Mail size={24} />
+        <div className="grid sm:grid-cols-2 gap-4 sm:gap-8 mb-8 sm:mb-12">
+          <div className="bg-white border border-border/50 rounded-2xl sm:rounded-3xl p-5 sm:p-8 flex items-center gap-4">
+            <div className="w-11 h-11 bg-accent/10 rounded-xl flex items-center justify-center text-accent flex-shrink-0">
+              <Mail size={22} />
             </div>
             <div>
-              <h3 className="text-lg font-black text-primary mb-1">Email Us</h3>
-              <p className="text-sm text-primary/40 font-bold">contact@youthcontest.com</p>
+              <h3 className="text-base font-black text-primary mb-0.5">Email Us</h3>
+              <p className="text-sm text-primary/40 font-bold break-all">contact@youthcontest.com</p>
             </div>
           </div>
-          <div className="bg-white border border-border/50 rounded-3xl p-8 flex items-start gap-4">
-            <div className="w-12 h-12 bg-accent/10 rounded-xl flex items-center justify-center text-accent flex-shrink-0">
-              <Phone size={24} />
+          <div className="bg-white border border-border/50 rounded-2xl sm:rounded-3xl p-5 sm:p-8 flex items-center gap-4">
+            <div className="w-11 h-11 bg-accent/10 rounded-xl flex items-center justify-center text-accent flex-shrink-0">
+              <Phone size={22} />
             </div>
             <div>
-              <h3 className="text-lg font-black text-primary mb-1">Call Us</h3>
+              <h3 className="text-base font-black text-primary mb-0.5">Call Us</h3>
               <p className="text-sm text-primary/40 font-bold">+1 (555) 123-4567</p>
             </div>
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="bg-white border border-border/50 rounded-3xl p-10">
-          <div className="grid md:grid-cols-2 gap-6 mb-6">
+        <form onSubmit={handleSubmit} className="bg-white border border-border/50 rounded-2xl sm:rounded-3xl p-5 sm:p-8 space-y-5">
+          <div className="grid sm:grid-cols-2 gap-5">
             <div>
-              <label className="block text-xs font-black uppercase tracking-widest text-primary/60 mb-3">Email</label>
+              <label className="block text-xs font-black uppercase tracking-widest text-primary/60 mb-2">Email</label>
               <input
                 type="email"
                 required
                 value={form.email}
                 onChange={e => setForm({ ...form, email: e.target.value })}
-                className="w-full px-4 py-3 border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-accent/20 font-medium"
+                className="w-full px-4 py-3 border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-accent/20 font-medium text-sm"
                 placeholder="you@example.com"
               />
             </div>
             <div>
-              <label className="block text-xs font-black uppercase tracking-widest text-primary/60 mb-3">Phone</label>
+              <label className="block text-xs font-black uppercase tracking-widest text-primary/60 mb-2">Phone</label>
               <input
                 type="tel"
                 required
                 value={form.phone}
                 onChange={e => setForm({ ...form, phone: e.target.value })}
-                className="w-full px-4 py-3 border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-accent/20 font-medium"
+                className="w-full px-4 py-3 border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-accent/20 font-medium text-sm"
                 placeholder="+1 (555) 000-0000"
               />
             </div>
           </div>
 
-          <div className="mb-6">
-            <label className="block text-xs font-black uppercase tracking-widest text-primary/60 mb-3">Reason</label>
+          <div>
+            <label className="block text-xs font-black uppercase tracking-widest text-primary/60 mb-2">Reason</label>
             <select
               value={form.reason}
               onChange={e => setForm({ ...form, reason: e.target.value })}
-              className="w-full px-4 py-3 border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-accent/20 font-medium"
+              className="w-full px-4 py-3 border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-accent/20 font-medium text-sm"
             >
               <option value="General Inquiry">General Inquiry</option>
               <option value="Registration Help">Registration Help</option>
@@ -93,25 +92,25 @@ const ContactPage = () => {
             </select>
           </div>
 
-          <div className="mb-8">
-            <label className="block text-xs font-black uppercase tracking-widest text-primary/60 mb-3">Message</label>
+          <div>
+            <label className="block text-xs font-black uppercase tracking-widest text-primary/60 mb-2">Message</label>
             <textarea
               required
-              rows={6}
+              rows={5}
               value={form.message}
               onChange={e => setForm({ ...form, message: e.target.value })}
-              className="w-full px-4 py-3 border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-accent/20 font-medium resize-none"
+              className="w-full px-4 py-3 border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-accent/20 font-medium text-sm resize-none"
               placeholder="Tell us how we can help..."
             />
           </div>
 
           {status === 'success' && (
-            <div className="mb-6 p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-700 text-sm font-bold">
+            <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-700 text-sm font-bold">
               Message sent successfully! We'll get back to you soon.
             </div>
           )}
           {status === 'error' && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm font-bold">
+            <div className="p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm font-bold">
               Failed to send message. Please try again.
             </div>
           )}
@@ -122,10 +121,7 @@ const ContactPage = () => {
             className="w-full btn-accent px-8 py-4 rounded-xl text-sm font-black uppercase tracking-widest flex items-center justify-center gap-2 disabled:opacity-50"
           >
             {status === 'loading' ? 'Sending...' : (
-              <>
-                Send Message
-                <Send size={16} />
-              </>
+              <>Send Message <Send size={16} /></>
             )}
           </button>
         </form>
@@ -136,4 +132,3 @@ const ContactPage = () => {
 };
 
 export default ContactPage;
-

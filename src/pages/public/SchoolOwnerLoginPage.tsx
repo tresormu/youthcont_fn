@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AlertCircle, ArrowRight, Mail, Hash } from 'lucide-react';
 import schoolReportService from '../../services/schoolReportService';
@@ -9,15 +9,7 @@ const SchoolOwnerLoginPage = () => {
   const [code, setCode] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [focused, setFocused] = useState<'email' | 'code' | null>(null);
   const codeRef = useRef<HTMLInputElement>(null);
-
-  // Auto-advance to code field when email looks complete
-  useEffect(() => {
-    if (email.includes('@') && email.includes('.') && focused === 'email') {
-      codeRef.current?.focus();
-    }
-  }, [email]);
 
   const handleLogin = async () => {
     setError('');
@@ -37,15 +29,21 @@ const SchoolOwnerLoginPage = () => {
     if (e.key === 'Enter') handleLogin();
   };
 
+  // Field wrapper style — uses CSS focus-within so no JS state needed
+  const fieldStyle: React.CSSProperties = {
+    background: 'rgba(255,255,255,0.07)',
+    border: '1px solid rgba(255,255,255,0.1)',
+    borderRadius: '1rem',
+    transition: 'box-shadow 0.15s',
+  };
+
   return (
     <div className="min-h-screen flex flex-col" style={{ background: 'linear-gradient(160deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)' }}>
-
-      {/* Top decorative strip */}
       <div className="h-1 w-full" style={{ background: 'linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899)' }} />
 
       <div className="flex-1 flex flex-col items-center justify-center px-5 py-12">
 
-        {/* Logo + branding */}
+        {/* Branding */}
         <div className="text-center mb-10">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-5 shadow-2xl overflow-hidden"
             style={{ background: 'linear-gradient(135deg, #1e40af, #7c3aed)' }}>
@@ -65,19 +63,16 @@ const SchoolOwnerLoginPage = () => {
 
             <div className="p-7 space-y-4">
 
-              {/* Email field */}
-              <div className={`rounded-2xl transition-all duration-200 ${focused === 'email' ? 'ring-2 ring-blue-500/60' : ''}`}
-                style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)' }}>
+              {/* Email */}
+              <div style={fieldStyle} className="focus-within:[box-shadow:0_0_0_2px_rgba(59,130,246,0.5)]">
                 <div className="flex items-center px-4 pt-3 pb-1 gap-3">
-                  <Mail size={15} className={`shrink-0 transition-colors ${focused === 'email' ? 'text-blue-400' : 'text-slate-500'}`} />
+                  <Mail size={15} className="shrink-0 text-slate-500" />
                   <span className="text-xs font-bold tracking-widest text-slate-500 uppercase">Email</span>
                 </div>
                 <input
                   type="email"
                   value={email}
                   onChange={e => setEmail(e.target.value)}
-                  onFocus={() => setFocused('email')}
-                  onBlur={() => setFocused(null)}
                   onKeyDown={handleKeyDown}
                   placeholder="your@email.com"
                   className="w-full bg-transparent px-4 pb-3 pt-1 text-white text-base font-medium placeholder-slate-600 focus:outline-none"
@@ -85,11 +80,10 @@ const SchoolOwnerLoginPage = () => {
                 />
               </div>
 
-              {/* Code field */}
-              <div className={`rounded-2xl transition-all duration-200 ${focused === 'code' ? 'ring-2 ring-purple-500/60' : ''}`}
-                style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)' }}>
+              {/* Code */}
+              <div style={fieldStyle} className="focus-within:[box-shadow:0_0_0_2px_rgba(139,92,246,0.5)]">
                 <div className="flex items-center px-4 pt-3 pb-1 gap-3">
-                  <Hash size={15} className={`shrink-0 transition-colors ${focused === 'code' ? 'text-purple-400' : 'text-slate-500'}`} />
+                  <Hash size={15} className="shrink-0 text-slate-500" />
                   <span className="text-xs font-bold tracking-widest text-slate-500 uppercase">Access Code</span>
                 </div>
                 <input
@@ -97,8 +91,6 @@ const SchoolOwnerLoginPage = () => {
                   type="text"
                   value={code}
                   onChange={e => setCode(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''))}
-                  onFocus={() => setFocused('code')}
-                  onBlur={() => setFocused(null)}
                   onKeyDown={handleKeyDown}
                   placeholder="e.g. A7K2P9"
                   maxLength={8}
@@ -127,26 +119,17 @@ const SchoolOwnerLoginPage = () => {
                 {loading ? (
                   <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                 ) : (
-                  <>
-                    View My Report
-                    <ArrowRight size={18} />
-                  </>
+                  <>View My Report <ArrowRight size={18} /></>
                 )}
               </button>
             </div>
 
-            {/* Bottom hint */}
             <div className="px-7 pb-6 text-center">
-              <p className="text-xs text-slate-600">
-                No code? Contact your tournament administrator.
-              </p>
+              <p className="text-xs text-slate-600">No code? Contact your tournament administrator.</p>
             </div>
           </div>
 
-          {/* Security note */}
-          <p className="text-center text-xs text-slate-600 mt-6">
-            🔒 Your access is time-limited and secure
-          </p>
+          <p className="text-center text-xs text-slate-600 mt-6">🔒 Your access is time-limited and secure</p>
         </div>
       </div>
     </div>
