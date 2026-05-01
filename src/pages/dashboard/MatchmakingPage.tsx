@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import matchService from '../../services/matchService';
 import schoolService from '../../services/schoolService';
 import teamService from '../../services/teamService';
@@ -31,6 +31,8 @@ interface TeamSchedule {
 
 const MatchmakingPage = () => {
   const { eventId } = useParams();
+  const [searchParams] = useSearchParams();
+  const isManualMode = searchParams.get('mode') === 'manual';
   const [schedules, setSchedules] = useState<TeamSchedule[]>([]);
   const [schools, setSchools] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -42,6 +44,10 @@ const MatchmakingPage = () => {
   const { toast } = useToast();
 
   const [selectedTeamId, setSelectedTeamId] = useState<string | null>(null);
+  const [manualMode, setManualMode] = useState(false);
+  const [schoolA, setSchoolA] = useState<string>('');
+  const [schoolB, setSchoolB] = useState<string>('');
+  const [pairing, setPairing] = useState(false);
   
   // Score Modal for Preliminary Match
   const [scoreModalMatch, setScoreModalMatch] = useState<{match: Match, teamIndex: number} | null>(null);
@@ -127,6 +133,21 @@ const MatchmakingPage = () => {
     } finally { setIsGenerating(false); }
   };
 
+  const handleManualPair = async () => {
+    if (!eventId || !schoolA || !schoolB) return;
+    if (schoolA === schoolB) { toast('Select two different schools', 'error'); return; }
+    setPairing(true);
+    try {
+      await matchService.createMatchup(eventId, { schoolAId: schoolA, schoolBId: schoolB });
+      toast('Schools paired successfully!');
+      setSchoolA('');
+      setSchoolB('');
+      fetchSchedules();
+    } catch (err: any) {
+      toast(err.response?.data?.message || 'Failed to pair schools', 'error');
+    } finally { setPairing(false); }
+  };
+
   const buildScores = (team: Team, existing?: { memberId: string; points: number }[]) =>
     (team.members ?? []).map(m => ({
       memberId: m._id,
@@ -203,7 +224,8 @@ const MatchmakingPage = () => {
       await matchService.cancelPrelims(eventId);
       setSchedules([]);
       setSelectedTeamId(null);
-      toast('All matchups reset');
+      toast('All matchups reset — event back to Registration Open');
+      navigate(`/dashboard/events/${eventId}/registration`);
     } catch { toast('Failed to reset matchups', 'error'); }
     finally { setActionLoading(false); setResetConfirm(false); }
   };
@@ -265,6 +287,88 @@ const MatchmakingPage = () => {
           )}
         </div>
       </div>
+
+      {isManualMode && schedules.length === 0 && (
+        <div className="bg-white border border-border rounded-[2rem] p-6 space-y-4">
+          <div>
+            <h2 className="text-lg font-black text-primary">Manual School Pairing</h2>
+            <p className="text-xs text-primary/40 font-medium mt-1">Select two schools to pair them against each other for preliminary rounds.</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+            <div>
+              <label className="block text-[9px] font-black uppercase tracking-widest text-primary/40 mb-2">School A</label>
+              <select
+                value={schoolA}
+                onChange={e => setSchoolA(e.target.value)}
+                className="w-full bg-secondary border border-border px-4 py-3 rounded-xl font-bold text-sm outline-none focus:ring-2 focus:ring-accent/30"
+              >
+                <option value="">Select school...</option>
+                {schools.map(s => <option key={s._id} value={s._id}>{s.name}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="block text-[9px] font-black uppercase tracking-widest text-primary/40 mb-2">School B</label>
+              <select
+                value={schoolB}
+                onChange={e => setSchoolB(e.target.value)}
+                className="w-full bg-secondary border border-border px-4 py-3 rounded-xl font-bold text-sm outline-none focus:ring-2 focus:ring-accent/30"
+              >
+                <option value="">Select school...</option>
+                {schools.filter(s => s._id !== schoolA).map(s => <option key={s._id} value={s._id}>{s.name}</option>)}
+              </select>
+            </div>
+            <button
+              onClick={handleManualPair}
+              disabled={!schoolA || !schoolB || pairing}
+              className="btn-accent py-3 px-6 rounded-xl font-black text-sm disabled:opacity-50"
+            >
+              {pairing ? 'Pairing...' : 'Pair Schools'}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {isManualMode && schedules.length > 0 && (
+        <div className="bg-white border border-border rounded-[2rem] p-6 space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-lg font-black text-primary">Manual School Pairing</h2>
+              <p className="text-xs text-primary/40 font-medium mt-1">Pair more schools or proceed when done.</p>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+            <div>
+              <label className="block text-[9px] font-black uppercase tracking-widest text-primary/40 mb-2">School A</label>
+              <select
+                value={schoolA}
+                onChange={e => setSchoolA(e.target.value)}
+                className="w-full bg-secondary border border-border px-4 py-3 rounded-xl font-bold text-sm outline-none focus:ring-2 focus:ring-accent/30"
+              >
+                <option value="">Select school...</option>
+                {schools.map(s => <option key={s._id} value={s._id}>{s.name}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="block text-[9px] font-black uppercase tracking-widest text-primary/40 mb-2">School B</label>
+              <select
+                value={schoolB}
+                onChange={e => setSchoolB(e.target.value)}
+                className="w-full bg-secondary border border-border px-4 py-3 rounded-xl font-bold text-sm outline-none focus:ring-2 focus:ring-accent/30"
+              >
+                <option value="">Select school...</option>
+                {schools.filter(s => s._id !== schoolA).map(s => <option key={s._id} value={s._id}>{s.name}</option>)}
+              </select>
+            </div>
+            <button
+              onClick={handleManualPair}
+              disabled={!schoolA || !schoolB || pairing}
+              className="btn-accent py-3 px-6 rounded-xl font-black text-sm disabled:opacity-50"
+            >
+              {pairing ? 'Pairing...' : 'Pair Schools'}
+            </button>
+          </div>
+        </div>
+      )}
 
       {allPrelimScored && (
         <div className="rounded-[2rem] border border-accent/20 bg-accent/5 p-6">
@@ -426,7 +530,7 @@ const MatchmakingPage = () => {
         <div className="bg-white border-2 border-dashed border-border rounded-[3rem] p-20 flex flex-col items-center text-center">
           <div className="w-20 h-20 bg-secondary rounded-[2rem] flex items-center justify-center text-primary/20 mb-6"><Sword size={40} /></div>
           <h3 className="text-2xl font-black text-primary mb-2">No Matchups Yet</h3>
-          {<button onClick={handleAutoAssign} disabled={isGenerating} className="mt-8 btn-accent py-4 px-10 rounded-2xl font-black text-sm">{isGenerating ? 'Generating...' : 'Auto-Generate Now'}</button>}
+          {!isManualMode && <button onClick={handleAutoAssign} disabled={isGenerating} className="mt-8 btn-accent py-4 px-10 rounded-2xl font-black text-sm">{isGenerating ? 'Generating...' : 'Auto-Generate Now'}</button>}
         </div>
       ) : (
         <div className="rounded-[2.5rem] border border-border/60 bg-white/40 overflow-hidden">
