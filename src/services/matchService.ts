@@ -11,6 +11,11 @@ export const matchService = {
     return response.data;
   },
 
+  manualAssignTeam: async (eventId: string, data: { teamId: string; opponents: string[] }) => {
+    const response = await api.post(`/events/${eventId}/matchups/manual`, data);
+    return response.data;
+  },
+
   autoAssign: async (eventId: string) => {
     const response = await api.post(`/events/${eventId}/matchups/auto`);
     return response.data;

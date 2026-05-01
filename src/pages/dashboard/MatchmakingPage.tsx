@@ -15,9 +15,11 @@ interface Team { _id: string; name: string; totalPoints: number; members?: TeamM
 interface Match {
   _id: string;
   teamA: Team;
-  teamB: Team;
+  teamB: Team | null;
   winner: string | null;
   status: string;
+  isBye?: boolean;
+  round?: number;
   winnerSpeakerPoints?: number;
   loserSpeakerPoints?: number;
   teamASpeakerScores?: { memberId: string; points: number }[];
@@ -47,7 +49,11 @@ const MatchmakingPage = () => {
   const [schoolA, setSchoolA] = useState<string>('');
   const [schoolB, setSchoolB] = useState<string>('');
   const [pairing, setPairing] = useState(false);
-  
+  const [manualTeamId, setManualTeamId] = useState<string>('');
+  const [manualOpponents, setManualOpponents] = useState<string[]>(['', '', '']);
+
+  // All teams flat list for manual dropdowns
+  const allTeams = useMemo(() => schedules.map(s => s.team), [schedules]);  
   // Score Modal for Preliminary Match
   const [scoreModalMatch, setScoreModalMatch] = useState<{match: Match, teamIndex: number} | null>(null);
   const [scoreForm, setScoreForm] = useState<{
@@ -133,17 +139,18 @@ const MatchmakingPage = () => {
   };
 
   const handleManualPair = async () => {
-    if (!eventId || !schoolA || !schoolB) return;
-    if (schoolA === schoolB) { toast('Select two different schools', 'error'); return; }
+    if (!eventId || !manualTeamId) return;
+    const filledOpponents = manualOpponents.filter(o => o.trim());
+    if (filledOpponents.length === 0) { toast('Select at least one opponent', 'error'); return; }
     setPairing(true);
     try {
-      await matchService.createMatchup(eventId, { schoolAId: schoolA, schoolBId: schoolB });
-      toast('Schools paired successfully!');
-      setSchoolA('');
-      setSchoolB('');
+      await matchService.manualAssignTeam(eventId, { teamId: manualTeamId, opponents: filledOpponents });
+      toast(`${filledOpponents.length} match(es) created!`);
+      setManualTeamId('');
+      setManualOpponents(['', '', '']);
       fetchSchedules();
     } catch (err: any) {
-      toast(err.response?.data?.message || 'Failed to pair schools', 'error');
+      toast(err.response?.data?.message || 'Failed to assign matches', 'error');
     } finally { setPairing(false); }
   };
 
@@ -234,7 +241,7 @@ const MatchmakingPage = () => {
     [schedules, selectedTeamId]
   );
 
-  const scheduleDone = (s: TeamSchedule) => s.matches.length > 0 && s.matches.every((m) => isCompleted(m.status));
+  const scheduleDone = (s: TeamSchedule) => s.matches.length > 0 && s.matches.every((m) => m.isBye || isCompleted(m.status));
 
   const allPrelimScored = useMemo(
     () => schedules.length > 0 && schedules.every((s) => scheduleDone(s)),
@@ -287,83 +294,96 @@ const MatchmakingPage = () => {
         </div>
       </div>
 
-      {isManualMode && schedules.length === 0 && (
-        <div className="bg-white border border-border rounded-[2rem] p-6 space-y-4">
+      {isManualMode && (
+        <div className="bg-white border border-border rounded-[2rem] p-6 space-y-5">
           <div>
-            <h2 className="text-lg font-black text-primary">Manual School Pairing</h2>
-            <p className="text-xs text-primary/40 font-medium mt-1">Select two schools to pair them against each other for preliminary rounds.</p>
+            <h2 className="text-lg font-black text-primary">Manual Team Assignment</h2>
+            <p className="text-xs text-primary/40 font-medium mt-1">Pick a team and assign up to 3 opponents across rounds. You can fill 1, 2, or all 3 at once.</p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-            <div>
-              <label className="block text-[9px] font-black uppercase tracking-widest text-primary/40 mb-2">School A</label>
-              <select
-                value={schoolA}
-                onChange={e => setSchoolA(e.target.value)}
-                className="w-full bg-secondary border border-border px-4 py-3 rounded-xl font-bold text-sm outline-none focus:ring-2 focus:ring-accent/30"
-              >
-                <option value="">Select school...</option>
-                {schools.map(s => <option key={s._id} value={s._id}>{s.name}</option>)}
-              </select>
-            </div>
-            <div>
-              <label className="block text-[9px] font-black uppercase tracking-widest text-primary/40 mb-2">School B</label>
-              <select
-                value={schoolB}
-                onChange={e => setSchoolB(e.target.value)}
-                className="w-full bg-secondary border border-border px-4 py-3 rounded-xl font-bold text-sm outline-none focus:ring-2 focus:ring-accent/30"
-              >
-                <option value="">Select school...</option>
-                {schools.filter(s => s._id !== schoolA).map(s => <option key={s._id} value={s._id}>{s.name}</option>)}
-              </select>
-            </div>
-            <button
-              onClick={handleManualPair}
-              disabled={!schoolA || !schoolB || pairing}
-              className="btn-accent py-3 px-6 rounded-xl font-black text-sm disabled:opacity-50"
-            >
-              {pairing ? 'Pairing...' : 'Pair Schools'}
-            </button>
-          </div>
-        </div>
-      )}
 
-      {isManualMode && schedules.length > 0 && (
-        <div className="bg-white border border-border rounded-[2rem] p-6 space-y-4">
-          <div className="flex items-center justify-between">
+          <div className="space-y-4">
+            {/* Team selector */}
             <div>
-              <h2 className="text-lg font-black text-primary">Manual School Pairing</h2>
-              <p className="text-xs text-primary/40 font-medium mt-1">Pair more schools or proceed when done.</p>
-            </div>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-            <div>
-              <label className="block text-[9px] font-black uppercase tracking-widest text-primary/40 mb-2">School A</label>
+              <label className="block text-[9px] font-black uppercase tracking-widest text-primary/40 mb-2">Team</label>
               <select
-                value={schoolA}
-                onChange={e => setSchoolA(e.target.value)}
+                value={manualTeamId}
+                onChange={e => { setManualTeamId(e.target.value); setManualOpponents(['', '', '']); }}
                 className="w-full bg-secondary border border-border px-4 py-3 rounded-xl font-bold text-sm outline-none focus:ring-2 focus:ring-accent/30"
               >
-                <option value="">Select school...</option>
-                {schools.map(s => <option key={s._id} value={s._id}>{s.name}</option>)}
+                <option value="">Select team...</option>
+                {schedules.map(s => {
+                  const matchCount = s.matches.filter(m => !m.isBye).length;
+                  return (
+                    <option key={s._id} value={s.team._id} disabled={matchCount >= 3}>
+                      {s.team.name} ({matchCount}/3 matches)
+                    </option>
+                  );
+                })}
               </select>
             </div>
-            <div>
-              <label className="block text-[9px] font-black uppercase tracking-widest text-primary/40 mb-2">School B</label>
-              <select
-                value={schoolB}
-                onChange={e => setSchoolB(e.target.value)}
-                className="w-full bg-secondary border border-border px-4 py-3 rounded-xl font-bold text-sm outline-none focus:ring-2 focus:ring-accent/30"
-              >
-                <option value="">Select school...</option>
-                {schools.filter(s => s._id !== schoolA).map(s => <option key={s._id} value={s._id}>{s.name}</option>)}
-              </select>
-            </div>
+
+            {/* Opponent slots */}
+            {manualTeamId && (() => {
+              const selectedSchedule = schedules.find(s => s.team._id === manualTeamId);
+              const existingCount = selectedSchedule?.matches.filter(m => !m.isBye).length ?? 0;
+              const remaining = 3 - existingCount;
+              const availableTeams = schedules
+                .filter(s => {
+                  if (s.team._id === manualTeamId) return false;
+                  // exclude same school
+                  const mySchool = schedules.find(x => x.team._id === manualTeamId);
+                  // exclude already paired
+                  const alreadyPaired = selectedSchedule?.matches.some(
+                    m => m.teamA?._id === s.team._id || m.teamB?._id === s.team._id
+                  );
+                  return !alreadyPaired;
+                })
+                .map(s => s.team);
+
+              return (
+                <div className="space-y-3">
+                  <p className="text-[9px] font-black uppercase tracking-widest text-primary/40">
+                    Opponents — fill up to {remaining} slot(s)
+                  </p>
+                  {Array.from({ length: remaining }).map((_, i) => (
+                    <div key={i} className="flex items-center gap-3">
+                      <span className="w-6 h-6 rounded-lg bg-accent/10 flex items-center justify-center text-[9px] font-black text-accent shrink-0">
+                        R{existingCount + i + 1}
+                      </span>
+                      <select
+                        value={manualOpponents[i] || ''}
+                        onChange={e => {
+                          const updated = [...manualOpponents];
+                          updated[i] = e.target.value;
+                          setManualOpponents(updated);
+                        }}
+                        className="flex-1 bg-secondary border border-border px-4 py-2.5 rounded-xl font-bold text-sm outline-none focus:ring-2 focus:ring-accent/30"
+                      >
+                        <option value="">No opponent (leave empty)</option>
+                        {availableTeams
+                          .filter(t => !manualOpponents.some((o, oi) => oi !== i && o === t._id))
+                          .map(t => {
+                            const oppSchedule = schedules.find(s => s.team._id === t._id);
+                            const oppCount = oppSchedule?.matches.filter(m => !m.isBye).length ?? 0;
+                            return (
+                              <option key={t._id} value={t._id} disabled={oppCount >= 3}>
+                                {t.name} ({oppCount}/3)
+                              </option>
+                            );
+                          })}
+                      </select>
+                    </div>
+                  ))}
+                </div>
+              );
+            })()}
+
             <button
               onClick={handleManualPair}
-              disabled={!schoolA || !schoolB || pairing}
-              className="btn-accent py-3 px-6 rounded-xl font-black text-sm disabled:opacity-50"
+              disabled={!manualTeamId || manualOpponents.every(o => !o) || pairing}
+              className="btn-accent py-3 px-6 rounded-xl font-black text-sm disabled:opacity-50 w-full"
             >
-              {pairing ? 'Pairing...' : 'Pair Schools'}
+              {pairing ? 'Saving...' : 'Save Matches'}
             </button>
           </div>
         </div>
@@ -588,23 +608,32 @@ const MatchmakingPage = () => {
                               <div className="flex justify-between items-center mb-2">
                                 <span className="text-[10px] font-black text-primary/40 uppercase tracking-widest">NODE #{i + 1}</span>
                                 <span className={`text-[8px] font-black px-2 py-1 rounded-full uppercase tracking-widest ${
+                                  match.isBye ? 'bg-slate-100 text-slate-500' :
                                   isScored ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
                                 }`}>
-                                  {isScored ? 'SCORED' : 'PENDING'}
+                                  {match.isBye ? 'BYE' : isScored ? 'SCORED' : 'PENDING'}
                                 </span>
                               </div>
-                              <h4 className="text-sm font-bold text-primary leading-tight">vs {opponent?.name || '---'}</h4>
+                              <h4 className="text-sm font-bold text-primary leading-tight">
+                                {match.isBye ? 'BYE Round' : `vs ${opponent?.name || '---'}`}
+                              </h4>
                             </div>
-                            <button
-                              onClick={() => openScoreModal(match, i + 1)}
-                              className="p-3 bg-secondary/30 hover:bg-primary hover:text-white transition-colors text-center"
-                            >
-                              <span className="text-[10px] font-black uppercase tracking-widest text-primary group-hover:text-white">
-                                {isScored ? 'View / Edit Score' : 'Enter Score'}
-                              </span>
-                            </button>
+                            {match.isBye ? (
+                              <div className="p-3 bg-slate-50 text-center">
+                                <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">No opponent — free round</span>
+                              </div>
+                            ) : (
+                              <button
+                                onClick={() => openScoreModal(match, i + 1)}
+                                className="p-3 bg-secondary/30 hover:bg-primary hover:text-white transition-colors text-center"
+                              >
+                                <span className="text-[10px] font-black uppercase tracking-widest text-primary group-hover:text-white">
+                                  {isScored ? 'View / Edit Score' : 'Enter Score'}
+                                </span>
+                              </button>
+                            )}
                           </div>
-                          {i < 2 && <ArrowRight size={18} className="text-primary/20 flex-shrink-0" />}
+                          {i < selectedSchedule.matches.length - 1 && <ArrowRight size={18} className="text-primary/20 flex-shrink-0" />}
                         </div>
                       );
                     })}
