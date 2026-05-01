@@ -24,10 +24,10 @@ const RegistrationPage = () => {
   const [schools, setSchools] = useState<School[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showAddSchool, setShowAddSchool] = useState(false);
-  const [newSchool, setNewSchool] = useState({ 
-    name: '', 
+  const [newSchool, setNewSchool] = useState({
+    name: '',
     region: '',
-    teams: [] as { name: string }[],
+    teams: [] as { name: string; members: [string, string, string] }[],
     publicSpeakers: [] as { fullName: string }[]
   });
   const [adding, setAdding] = useState(false);
@@ -75,14 +75,19 @@ const RegistrationPage = () => {
     if (!eventId) return;
     setAdding(true);
     try {
-      await schoolService.registerSchool(eventId, newSchool);
+      await schoolService.registerSchool(eventId, {
+        ...newSchool,
+        teams: newSchool.teams.map(t => ({
+          name: t.name,
+          members: t.members.map((fullName, i) => ({ fullName, speakerOrder: i + 1 })),
+        })),
+      });
       setShowAddSchool(false);
       setNewSchool({ name: '', region: '', teams: [], publicSpeakers: [] });
-      toast(`School registered successfully!`);
-      // Let socket event update the list; fallback to refetch if socket is not connected
+      toast('School registered successfully!');
       if (!socket?.connected) await fetchData();
-    } catch {
-      toast('Failed to add school', 'error');
+    } catch (err: any) {
+      toast(err?.response?.data?.message || 'Failed to add school', 'error');
     } finally {
       setAdding(false);
     }
@@ -251,36 +256,57 @@ const RegistrationPage = () => {
                         <div className="flex items-center justify-between">
                           <p className="text-[9px] font-black text-primary/40 uppercase tracking-widest">Teams ({newSchool.teams.length}/3)</p>
                           {newSchool.teams.length < 3 && (
-                            <button 
-                              type="button" 
-                              onClick={() => setNewSchool(prev => ({ ...prev, teams: [...prev.teams, { name: '' }] }))}
+                            <button
+                              type="button"
+                              onClick={() => setNewSchool(prev => ({ ...prev, teams: [...prev.teams, { name: '', members: ['', '', ''] }] }))}
                               className="text-[9px] font-black text-accent uppercase tracking-widest hover:underline"
                             >
                               + Add Team
                             </button>
                           )}
                         </div>
-                        <div className="space-y-2">
+                        <div className="space-y-3">
                           {newSchool.teams.map((team, idx) => (
-                            <div key={idx} className="flex gap-2">
-                              <input
-                                required
-                                placeholder={`Team ${idx + 1} Name`}
-                                className="flex-1 bg-white border border-border px-4 py-2 rounded-lg font-bold text-xs focus:ring-2 focus:ring-accent/20 outline-none"
-                                value={team.name}
-                                onChange={(e) => {
-                                  const teams = [...newSchool.teams];
-                                  teams[idx].name = e.target.value;
-                                  setNewSchool({ ...newSchool, teams });
-                                }}
-                              />
-                              <button 
-                                type="button"
-                                onClick={() => setNewSchool(prev => ({ ...prev, teams: prev.teams.filter((_, i) => i !== idx) }))}
-                                className="p-2 text-primary/20 hover:text-destructive transition-colors"
-                              >
-                                <Trash2 size={14} />
-                              </button>
+                            <div key={idx} className="bg-white border border-border rounded-xl p-3 space-y-2">
+                              <div className="flex gap-2">
+                                <input
+                                  required
+                                  placeholder={`Team ${idx + 1} Name`}
+                                  className="flex-1 bg-secondary border border-transparent px-3 py-2 rounded-lg font-bold text-xs focus:ring-2 focus:ring-accent/20 outline-none"
+                                  value={team.name}
+                                  onChange={(e) => {
+                                    const teams = [...newSchool.teams];
+                                    teams[idx] = { ...teams[idx], name: e.target.value };
+                                    setNewSchool({ ...newSchool, teams });
+                                  }}
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => setNewSchool(prev => ({ ...prev, teams: prev.teams.filter((_, i) => i !== idx) }))}
+                                  className="p-1.5 text-primary/20 hover:text-destructive transition-colors"
+                                >
+                                  <Trash2 size={13} />
+                                </button>
+                              </div>
+                              <p className="text-[8px] font-black text-primary/30 uppercase tracking-widest px-1">Members</p>
+                              {([0, 1, 2] as const).map(pos => (
+                                <div key={pos} className="flex items-center gap-2 bg-secondary/50 px-3 py-1.5 rounded-lg">
+                                  <span className="text-[8px] font-black text-accent w-3">{pos + 1}</span>
+                                  <input
+                                    required
+                                    placeholder={`Speaker ${pos + 1} full name`}
+                                    className="flex-1 bg-transparent outline-none font-bold text-xs text-primary placeholder:text-primary/20"
+                                    value={team.members[pos]}
+                                    onChange={(e) => {
+                                      const teams = [...newSchool.teams];
+                                      const members = [...teams[idx].members] as [string, string, string];
+                                      members[pos] = e.target.value;
+                                      teams[idx] = { ...teams[idx], members };
+                                      setNewSchool({ ...newSchool, teams });
+                                    }}
+                                  />
+                                </div>
+                              ))}
                             </div>
                           ))}
                         </div>

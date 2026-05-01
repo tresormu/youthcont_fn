@@ -27,23 +27,9 @@ const api = axios.create({
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    const { response } = error;
-
-    if (response?.status === 401) {
-      const isDashboard = window.location.pathname.startsWith('/dashboard');
-      const isLoginPage = window.location.pathname.includes('/login');
-      const isSchoolReport = window.location.pathname.startsWith('/school-report');
-      if (isDashboard && !isLoginPage) {
-        window.location.href = '/login';
-      } else if (isSchoolReport && window.location.pathname !== '/school-report') {
-        window.location.href = '/school-report';
-      }
-    }
-
-    if (!response) {
+    if (!error.response) {
       error.message = 'Network error: could not reach the API server.';
     }
-
     return Promise.reject(error);
   }
 );
