@@ -94,7 +94,7 @@ const DashboardLayout = () => {
             )}
             {collapsed && <div className="my-3 h-px bg-border/50 mx-2" />}
             <SidebarLink to="/dashboard/staff" icon={UserCog} label="Staff Management" collapsed={collapsed} />
-            <SidebarLink to={eventId ? `/dashboard/events/${eventId}/grant-access` : '/dashboard/events'} icon={KeyRound} label="Grant School Access" collapsed={collapsed} />
+            <SidebarLink to={`/dashboard/events/${eventId}/grant-access`} icon={KeyRound} label="Grant School Access" collapsed={collapsed} />
           </>
         )}
       </div>
