@@ -46,14 +46,10 @@ const MatchmakingPage = () => {
   const { toast } = useToast();
 
   const [selectedTeamId, setSelectedTeamId] = useState<string | null>(null);
-  const [schoolA, setSchoolA] = useState<string>('');
-  const [schoolB, setSchoolB] = useState<string>('');
   const [pairing, setPairing] = useState(false);
   const [manualTeamId, setManualTeamId] = useState<string>('');
   const [manualOpponents, setManualOpponents] = useState<string[]>(['', '', '']);
-
-  // All teams flat list for manual dropdowns
-  const allTeams = useMemo(() => schedules.map(s => s.team), [schedules]);  
+  
   // Score Modal for Preliminary Match
   const [scoreModalMatch, setScoreModalMatch] = useState<{match: Match, teamIndex: number} | null>(null);
   const [scoreForm, setScoreForm] = useState<{
@@ -162,6 +158,7 @@ const MatchmakingPage = () => {
     }));
 
   const openScoreModal = (match: Match, teamIndex: number) => {
+    if (!match.teamB) return;
     const aWon = match.winner === match.teamA?._id;
     setScoreForm({
       winner: aWon ? 'A' : 'B',
@@ -174,6 +171,7 @@ const MatchmakingPage = () => {
   const saveScoreModal = async () => {
     if (!scoreModalMatch) return;
     const { match } = scoreModalMatch;
+    if (!match.teamB) return;
     setSavingScore(true);
     try {
       const winnerId = scoreForm.winner === 'A' ? match.teamA._id : match.teamB._id;
@@ -193,6 +191,7 @@ const MatchmakingPage = () => {
   };
 
   const openKnockoutModal = (match: Match, title: string) => {
+    if (!match.teamB) return;
     const aWon = match.winner === match.teamA?._id;
     setKnockoutForm({
       winner: aWon ? 'A' : 'B',
@@ -205,6 +204,7 @@ const MatchmakingPage = () => {
   const saveKnockoutModal = async () => {
     if (!knockoutModalMatch) return;
     const { match } = knockoutModalMatch;
+    if (!match.teamB) return;
     setSavingScore(true);
     try {
       const winnerId = knockoutForm.winner === 'A' ? match.teamA._id : match.teamB._id;
@@ -330,9 +330,6 @@ const MatchmakingPage = () => {
               const availableTeams = schedules
                 .filter(s => {
                   if (s.team._id === manualTeamId) return false;
-                  // exclude same school
-                  const mySchool = schedules.find(x => x.team._id === manualTeamId);
-                  // exclude already paired
                   const alreadyPaired = selectedSchedule?.matches.some(
                     m => m.teamA?._id === s.team._id || m.teamB?._id === s.team._id
                   );
