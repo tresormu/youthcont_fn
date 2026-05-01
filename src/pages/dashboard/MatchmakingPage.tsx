@@ -282,7 +282,7 @@ const MatchmakingPage = () => {
           <p className="text-primary/40 font-medium mt-1">Select a team to view their preliminary match nodes.</p>
         </div>
         <div className="flex gap-3">
-          {schedules.length > 0 && (
+          {schedules.some(s => s.matches.length > 0) && (
             <button onClick={() => setResetConfirm(true)} className="px-5 py-3.5 rounded-2xl font-black text-xs text-destructive hover:bg-destructive/5 transition-all flex items-center gap-2 border border-destructive/20"><RotateCcw size={15} /> Reset All</button>
           )}
         </div>
@@ -444,11 +444,11 @@ const MatchmakingPage = () => {
 
       {isLoading ? (
         <div className="space-y-4">{[1, 2, 3].map(i => <div key={i} className="h-32 bg-white/60 rounded-[2rem] animate-pulse" />)}</div>
-      ) : schedules.length === 0 ? (
+      ) : schedules.every(s => s.matches.length === 0) && !isManualMode ? (
         <div className="bg-white border-2 border-dashed border-border rounded-[3rem] p-20 flex flex-col items-center text-center">
           <div className="w-20 h-20 bg-secondary rounded-[2rem] flex items-center justify-center text-primary/20 mb-6"><Sword size={40} /></div>
           <h3 className="text-2xl font-black text-primary mb-2">No Matchups Yet</h3>
-          {!isManualMode && <button onClick={handleAutoAssign} disabled={isGenerating} className="mt-8 btn-accent py-4 px-10 rounded-2xl font-black text-sm">{isGenerating ? 'Generating...' : 'Auto-Generate Now'}</button>}
+          <button onClick={handleAutoAssign} disabled={isGenerating} className="mt-8 btn-accent py-4 px-10 rounded-2xl font-black text-sm">{isGenerating ? 'Generating...' : 'Auto-Generate Now'}</button>
         </div>
       ) : (
         <div className="rounded-[2.5rem] border border-border/60 bg-white/40 overflow-hidden">
