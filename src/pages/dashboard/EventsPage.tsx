@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import eventService from '../../services/eventService';
-import { Plus, Calendar, ChevronRight, Trophy, Trash2 } from 'lucide-react';
+import { Plus, Calendar, ChevronRight, Trophy, Trash2, PlayCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ConfirmModal } from '../../components/common/ConfirmModal';
 import { useToast } from '../../components/common/Toast';
@@ -34,7 +34,23 @@ const EventsPage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
+  const [starting, setStarting] = useState<string | null>(null);
+
   useEffect(() => { fetchEvents(); }, []);
+
+  const handleStart = async (e: React.MouseEvent, eventId: string) => {
+    e.stopPropagation();
+    setStarting(eventId);
+    try {
+      const updated = await eventService.updateStatus(eventId, 'Registration Open');
+      setEvents(prev => prev.map(ev => ev._id === eventId ? { ...ev, status: updated.status } : ev));
+      toast('Registration is now open!');
+    } catch (err: any) {
+      toast(err?.response?.data?.message || 'Failed to start registration', 'error');
+    } finally {
+      setStarting(null);
+    }
+  };
 
   const fetchEvents = async () => {
     try {
@@ -128,12 +144,22 @@ const EventsPage = () => {
                     {event.status}
                   </span>
                   {event.status === 'Draft' && (
-                    <button
-                      onClick={() => setDeleteTarget(event)}
-                      className="w-7 h-7 rounded-xl bg-secondary flex items-center justify-center text-primary/20 hover:bg-destructive/10 hover:text-destructive transition-all"
-                    >
-                      <Trash2 size={13} />
-                    </button>
+                    <>
+                      <button
+                        onClick={(e) => handleStart(e, event._id)}
+                        disabled={starting === event._id}
+                        className="flex items-center gap-1 px-3 py-1 rounded-full bg-emerald-100 text-emerald-600 text-[9px] font-black uppercase tracking-wider hover:bg-emerald-200 transition-all disabled:opacity-60"
+                      >
+                        <PlayCircle size={11} />
+                        {starting === event._id ? '...' : 'Start'}
+                      </button>
+                      <button
+                        onClick={() => setDeleteTarget(event)}
+                        className="w-7 h-7 rounded-xl bg-secondary flex items-center justify-center text-primary/20 hover:bg-destructive/10 hover:text-destructive transition-all"
+                      >
+                        <Trash2 size={13} />
+                      </button>
+                    </>
                   )}
                 </div>
 

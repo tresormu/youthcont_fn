@@ -112,24 +112,15 @@ const RegistrationPage = () => {
     if (!eventId) return;
     setAdvancing(true);
     try {
-      if (event?.status !== 'Preliminary Rounds') {
-        await eventService.updateStatus(eventId, 'Preliminary Rounds');
-        toast(`Advanced to Preliminary Rounds (${mode})!`);
-      } else {
-        toast(`Opening Preliminary Rounds (${mode})...`);
-      }
+      await eventService.updateStatus(eventId, 'Preliminary Rounds');
+      toast('Advanced to Preliminary Rounds!');
       navigate(`/dashboard/events/${eventId}/matchmaking?mode=${mode}`);
     } catch (err: any) {
-      const message = err?.response?.data?.message || '';
-      if (message.includes('Cannot transition from "Preliminary Rounds" to "Preliminary Rounds"')) {
-        toast(`Opening Preliminary Rounds (${mode})...`);
-        navigate(`/dashboard/events/${eventId}/matchmaking?mode=${mode}`);
-      } else {
-        toast('Failed to advance stage', 'error');
-      }
+      toast(err?.response?.data?.message || 'Failed to advance stage', 'error');
     } finally {
       setAdvancing(false);
-      setAdvanceConfirm(false);    }
+      setAdvanceConfirm(false);
+    }
   };
 
 
