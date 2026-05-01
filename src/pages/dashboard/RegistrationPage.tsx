@@ -133,8 +133,8 @@ const RegistrationPage = () => {
   };
 
 
-  const totalTeams = schools.reduce((acc, s) => acc + (s.teamCount ?? s.teams?.length ?? 0), 0);
-  const totalSpeakers = schools.reduce((acc, s) => acc + (s.publicSpeakerCount ?? s.publicSpeakers?.length ?? 0), 0);
+  const totalTeams = schools.reduce((acc, s) => acc + (s.teamCount ?? 0), 0);
+  const totalSpeakers = schools.reduce((acc, s) => acc + (s.publicSpeakerCount ?? 0), 0);
 
   return (
     <div className="space-y-8 pb-20">
