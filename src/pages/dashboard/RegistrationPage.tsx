@@ -45,7 +45,9 @@ const RegistrationPage = () => {
   useEffect(() => {
     if (!socket || !eventId) return;
     socket.emit('joinEvent', eventId);
-    const handleSchoolAdded = (school: School) => setSchools(prev => [...prev, school]);
+    const handleSchoolAdded = (school: School) => {
+      setSchools(prev => prev.some(s => s._id === school._id) ? prev : [...prev, school]);
+    };
     socket.on('school:added', handleSchoolAdded);
     return () => {
       socket.off('school:added', handleSchoolAdded);
@@ -73,11 +75,12 @@ const RegistrationPage = () => {
     if (!eventId) return;
     setAdding(true);
     try {
-      const data = await schoolService.registerSchool(eventId, newSchool);
-      setSchools(prev => [...prev, data]);
+      await schoolService.registerSchool(eventId, newSchool);
       setShowAddSchool(false);
       setNewSchool({ name: '', region: '', teams: [], publicSpeakers: [] });
-      toast(`${data.name} registered successfully!`);
+      toast(`School registered successfully!`);
+      // Let socket event update the list; fallback to refetch if socket is not connected
+      if (!socket?.connected) await fetchData();
     } catch {
       toast('Failed to add school', 'error');
     } finally {

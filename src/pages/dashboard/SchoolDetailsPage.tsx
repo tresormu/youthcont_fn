@@ -21,7 +21,7 @@ const SchoolDetailsPage = () => {
   const [publicSpeakers, setPublicSpeakers] = useState<PublicSpeaker[]>([]);
   const [activeTab, setActiveTab] = useState<'teams' | 'speakers'>('teams');
   const [showAddTeam, setShowAddTeam] = useState(false);
-  const [newTeamName, setNewTeamName] = useState('');
+  const [newTeam, setNewTeam] = useState({ name: '', members: ['', '', ''] });
   const [addingTeam, setAddingTeam] = useState(false);
   const [deleteTeam, setDeleteTeam] = useState<Team | null>(null);
   const [deleteSpeaker, setDeleteSpeaker] = useState<PublicSpeaker | null>(null);
@@ -55,14 +55,18 @@ const SchoolDetailsPage = () => {
   };
 
   const handleAddTeam = async () => {
-    if (!schoolId || !newTeamName.trim()) return;
+    if (!schoolId || !newTeam.name.trim()) return;
     if (teams.length >= 3) { toast('Maximum 3 teams per school', 'warning'); return; }
+    if (newTeam.members.some(m => !m.trim())) { toast('All 3 member names are required', 'warning'); return; }
     setAddingTeam(true);
     try {
-      await teamService.registerTeam(schoolId, { name: newTeamName });
+      await teamService.registerTeam(schoolId, {
+        name: newTeam.name,
+        members: newTeam.members.map((fullName, i) => ({ fullName, speakerOrder: i + 1 })),
+      });
       await fetchData();
       setShowAddTeam(false);
-      setNewTeamName('');
+      setNewTeam({ name: '', members: ['', '', ''] });
       toast('Team registered!');
     } catch { toast('Failed to add team', 'error'); }
     finally { setAddingTeam(false); }
@@ -259,20 +263,35 @@ const SchoolDetailsPage = () => {
               className="relative w-full max-w-md bg-white rounded-[3rem] p-10 shadow-2xl overflow-hidden">
               <div className="absolute top-0 left-0 right-0 h-1.5 bg-accent" />
               <h2 className="text-2xl font-black text-primary mb-6">Register New Team</h2>
-              <div className="space-y-5">
+              <div className="space-y-4">
                 <input autoFocus
                   placeholder="Team Name (e.g. The Debaters)"
                   className="w-full bg-secondary px-5 py-4 rounded-2xl font-bold text-sm outline-none border border-transparent focus:border-accent/50"
-                  value={newTeamName}
-                  onChange={(e) => setNewTeamName(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleAddTeam()}
+                  value={newTeam.name}
+                  onChange={(e) => setNewTeam(prev => ({ ...prev, name: e.target.value }))}
                 />
-                <div className="flex gap-3">
+                <p className="text-[9px] font-black uppercase tracking-widest text-primary/40 pt-2">Team Members (required)</p>
+                {[0, 1, 2].map(i => (
+                  <div key={i} className="flex items-center gap-3 bg-secondary/50 px-4 py-3 rounded-2xl border border-transparent focus-within:border-accent/30">
+                    <span className="w-6 h-6 rounded-lg bg-white flex items-center justify-center font-black text-[9px] text-accent border border-border shrink-0">{i + 1}</span>
+                    <input
+                      placeholder={`Speaker ${i + 1} full name`}
+                      className="flex-1 bg-transparent outline-none font-bold text-sm text-primary placeholder:text-primary/20"
+                      value={newTeam.members[i]}
+                      onChange={(e) => setNewTeam(prev => {
+                        const members = [...prev.members];
+                        members[i] = e.target.value;
+                        return { ...prev, members };
+                      })}
+                    />
+                  </div>
+                ))}
+                <div className="flex gap-3 pt-2">
                   <button onClick={() => setShowAddTeam(false)}
                     className="flex-1 py-4 rounded-2xl font-black text-sm text-primary/40 hover:bg-secondary transition-all">
                     Cancel
                   </button>
-                  <button onClick={handleAddTeam} disabled={addingTeam || !newTeamName.trim()}
+                  <button onClick={handleAddTeam} disabled={addingTeam || !newTeam.name.trim()}
                     className="flex-[2] btn-accent py-4 rounded-2xl font-black text-sm shadow-xl shadow-accent/20 disabled:opacity-60">
                     {addingTeam ? '...' : 'Register Team'}
                   </button>
