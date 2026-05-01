@@ -44,7 +44,6 @@ const MatchmakingPage = () => {
   const { toast } = useToast();
 
   const [selectedTeamId, setSelectedTeamId] = useState<string | null>(null);
-  const [manualMode, setManualMode] = useState(false);
   const [schoolA, setSchoolA] = useState<string>('');
   const [schoolB, setSchoolB] = useState<string>('');
   const [pairing, setPairing] = useState(false);
