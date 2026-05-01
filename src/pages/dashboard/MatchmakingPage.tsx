@@ -83,15 +83,29 @@ const MatchmakingPage = () => {
   const isCompleted = (status?: string) => String(status || '').toUpperCase().includes('COMPLETED');
 
   useEffect(() => {
-    fetchSchedules();
-    fetchSchools();
+    const init = async () => {
+      await fetchSchools();
+      const data = await fetchSchedules(true);
+      if (!isManualMode && data && data.every((s: any) => s.matches.length === 0)) {
+        setIsGenerating(true);
+        try {
+          await matchService.autoAssign(eventId!);
+          await fetchSchedules(true);
+        } catch (err: any) {
+          toast(err.response?.data?.message || 'Failed to auto-assign', 'error');
+        } finally {
+          setIsGenerating(false);
+        }
+      }
+    };
+    init();
     if (socket) {
       socket.emit('joinEvent', eventId);
-      socket.on('matchups:created', fetchSchedules);
-      socket.on('match:updated', fetchSchedules);
+      socket.on('matchups:created', () => fetchSchedules(true));
+      socket.on('match:updated', () => fetchSchedules(true));
       return () => { socket.off('matchups:created'); socket.off('match:updated'); };
     }
-  }, [eventId, socket]);
+  }, [eventId]);
 
   useEffect(() => {
     if (pipelineStep === 'done') {
@@ -107,6 +121,7 @@ const MatchmakingPage = () => {
       if ((resetSelection || !selectedTeamId) && matchupsData.length > 0) {
         setSelectedTeamId(matchupsData[0]._id);
       }
+      return matchupsData;
     } catch { toast('Failed to load schedules', 'error'); }
     finally { setIsLoading(false); }
   };
