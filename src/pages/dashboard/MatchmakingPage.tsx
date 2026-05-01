@@ -99,12 +99,14 @@ const MatchmakingPage = () => {
     }
   }, [pipelineStep]);
 
-  const fetchSchedules = async () => {
+  const fetchSchedules = async (resetSelection = false) => {
     if (!eventId) return;
     try {
       const matchupsData = await matchService.getMatchups(eventId);
       setSchedules(matchupsData);
-      if (!selectedTeamId && matchupsData.length > 0) setSelectedTeamId(matchupsData[0]._id);
+      if ((resetSelection || !selectedTeamId) && matchupsData.length > 0) {
+        setSelectedTeamId(matchupsData[0]._id);
+      }
     } catch { toast('Failed to load schedules', 'error'); }
     finally { setIsLoading(false); }
   };
@@ -135,7 +137,7 @@ const MatchmakingPage = () => {
     try {
       await matchService.autoAssign(eventId);
       toast('Matchups generated!');
-      await fetchSchedules();
+      await fetchSchedules(true);
     } catch (err: any) {
       toast(err.response?.data?.message || 'Failed to auto-assign', 'error');
     } finally { setIsGenerating(false); }
@@ -512,7 +514,7 @@ const MatchmakingPage = () => {
                       </div>
                     ) : selectedSchedule.matches.map((match, i) => {
                       const isScored = isCompleted(match.status);
-                      const opponent = match.teamA._id === selectedSchedule.team._id ? match.teamB : match.teamA;
+                      const opponent = match.teamA._id?.toString() === selectedSchedule.team._id?.toString() ? match.teamB : match.teamA;
                       return (
                         <div key={match._id} className="flex items-center gap-5">
                           <div className="w-56 bg-white rounded-2xl shadow-sm border border-border/80 overflow-hidden flex flex-col group hover:-translate-y-1 transition-transform">
