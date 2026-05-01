@@ -115,8 +115,10 @@ const RegistrationPage = () => {
       await eventService.updateStatus(eventId, 'Preliminary Rounds');
       toast('Advanced to Preliminary Rounds!');
       if (mode === 'manual') {
+        localStorage.setItem(`matchmaking_mode_${eventId}`, 'manual');
         navigate(`/dashboard/events/${eventId}/manual-assign`);
       } else {
+        localStorage.removeItem(`matchmaking_mode_${eventId}`);
         navigate(`/dashboard/events/${eventId}/matchmaking?mode=auto`);
       }
     } catch (err: any) {

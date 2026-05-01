@@ -78,6 +78,9 @@ const DashboardLayout = () => {
             )}
             {collapsed && <div className="my-3 h-px bg-border/50 mx-2" />}
             <SidebarLink to={`/dashboard/events/${eventId}/registration`} icon={Users} label="Schools & Teams" collapsed={collapsed} />
+            {localStorage.getItem(`matchmaking_mode_${eventId}`) === 'manual' && (
+              <SidebarLink to={`/dashboard/events/${eventId}/manual-assign`} icon={Sword} label="Manual Assignment" collapsed={collapsed} />
+            )}
             <SidebarLink to={`/dashboard/events/${eventId}/matchmaking`} icon={Sword} label="Match Console" collapsed={collapsed} />
             <SidebarLink to={`/dashboard/events/${eventId}/bracket`} icon={GitBranch} label="Bracket" collapsed={collapsed} />
             <SidebarLink to={`/dashboard/events/${eventId}/rankings`} icon={BarChart3} label="Rankings" collapsed={collapsed} />

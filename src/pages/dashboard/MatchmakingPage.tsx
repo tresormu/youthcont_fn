@@ -35,6 +35,16 @@ const MatchmakingPage = () => {
   const { eventId } = useParams();
   const [searchParams] = useSearchParams();
   const isManualMode = searchParams.get('mode') === 'manual';
+
+  useEffect(() => {
+    if (eventId) {
+      const mode = searchParams.get('mode');
+      if (mode) {
+        localStorage.setItem(`matchmaking_mode_${eventId}`, mode);
+      }
+    }
+  }, [eventId, searchParams]);
+
   const [schedules, setSchedules] = useState<TeamSchedule[]>([]);
   const [schools, setSchools] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -125,7 +135,7 @@ const MatchmakingPage = () => {
     try {
       await matchService.autoAssign(eventId);
       toast('Matchups generated!');
-      fetchSchedules();
+      await fetchSchedules();
     } catch (err: any) {
       toast(err.response?.data?.message || 'Failed to auto-assign', 'error');
     } finally { setIsGenerating(false); }
@@ -209,6 +219,7 @@ const MatchmakingPage = () => {
     setActionLoading(true);
     try {
       await matchService.cancelPrelims(eventId);
+      localStorage.removeItem(`matchmaking_mode_${eventId}`);
       setSchedules([]);
       setSelectedTeamId(null);
       toast('All matchups reset — event back to Registration Open');

@@ -20,6 +20,10 @@ const ManualAssignPage = () => {
   const [opponents, setOpponents] = useState<string[]>(['', '', '']);
   const [saving, setSaving] = useState(false);
 
+  useEffect(() => {
+    if (eventId) localStorage.setItem(`matchmaking_mode_${eventId}`, 'manual');
+  }, [eventId]);
+
   useEffect(() => { fetchSchedules(); }, [eventId]);
 
   const fetchSchedules = async () => {
