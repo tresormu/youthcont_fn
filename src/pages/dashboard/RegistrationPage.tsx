@@ -114,7 +114,11 @@ const RegistrationPage = () => {
     try {
       await eventService.updateStatus(eventId, 'Preliminary Rounds');
       toast('Advanced to Preliminary Rounds!');
-      navigate(`/dashboard/events/${eventId}/matchmaking?mode=${mode}`);
+      if (mode === 'manual') {
+        navigate(`/dashboard/events/${eventId}/manual-assign`);
+      } else {
+        navigate(`/dashboard/events/${eventId}/matchmaking?mode=auto`);
+      }
     } catch (err: any) {
       toast(err?.response?.data?.message || 'Failed to advance stage', 'error');
     } finally {

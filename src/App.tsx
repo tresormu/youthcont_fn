@@ -9,6 +9,7 @@ import DashboardLayout from './components/layout/DashboardLayout';
 import DashboardEventsPage from './pages/dashboard/EventsPage';
 import RegistrationPage from './pages/dashboard/RegistrationPage';
 import MatchmakingPage from './pages/dashboard/MatchmakingPage';
+import ManualAssignPage from './pages/dashboard/ManualAssignPage';
 import BracketPage from './pages/dashboard/BracketPage';
 import RankingsPage from './pages/dashboard/RankingsPage';
 import SchoolDetailsPage from './pages/dashboard/SchoolDetailsPage';
@@ -72,6 +73,7 @@ function AppRoutes() {
           <Route path="events/:eventId/registration" element={<RegistrationPage />} />
           <Route path="schools/:schoolId/teams" element={<SchoolDetailsPage />} />
           <Route path="events/:eventId/matchmaking" element={<MatchmakingPage />} />
+          <Route path="events/:eventId/manual-assign" element={<ManualAssignPage />} />
           <Route path="events/:eventId/bracket" element={<BracketPage />} />
           <Route path="events/:eventId/rankings" element={<RankingsPage />} />
           <Route path="staff" element={
