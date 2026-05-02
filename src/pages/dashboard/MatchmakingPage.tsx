@@ -19,6 +19,7 @@ interface Match {
   winner: string | null;
   status: string;
   isBye?: boolean;
+  isByePractice?: boolean;
   round?: number;
   winnerSpeakerPoints?: number;
   loserSpeakerPoints?: number;
@@ -166,12 +167,12 @@ const MatchmakingPage = () => {
     }));
 
   const openScoreModal = (match: Match, teamIndex: number) => {
-    if (!match.teamB) return;
-    const aWon = match.winner === match.teamA?._id;
+    if (!match.isByePractice && !match.teamB) return;
+    const aWon = match.isByePractice || match.winner === match.teamA?._id;
     setScoreForm({
       winner: aWon ? 'A' : 'B',
       aScores: buildScores(match.teamA, match.teamASpeakerScores),
-      bScores: buildScores(match.teamB, match.teamBSpeakerScores),
+      bScores: match.teamB ? buildScores(match.teamB, match.teamBSpeakerScores) : [],
     });
     setScoreModalMatch({ match, teamIndex });
   };
@@ -179,17 +180,37 @@ const MatchmakingPage = () => {
   const saveScoreModal = async () => {
     if (!scoreModalMatch) return;
     const { match } = scoreModalMatch;
-    if (!match.teamB) return;
+    
+    const aValid = scoreForm.aScores.every(s => s.points <= 30);
+    const bValid = scoreForm.bScores.every(s => s.points <= 30);
+    if (!aValid || (!match.isByePractice && !bValid)) {
+      toast('Speaker score cannot exceed 30 points', 'error');
+      return;
+    }
+
     setSavingScore(true);
     try {
-      const winnerId = scoreForm.winner === 'A' ? match.teamA._id : match.teamB._id;
-      const loserId = scoreForm.winner === 'A' ? match.teamB._id : match.teamA._id;
-      await matchService.enterResult(match._id, {
-        winnerId,
-        loserId,
-        teamASpeakerScores: scoreForm.aScores.map(s => ({ memberId: s.memberId, points: s.points })),
-        teamBSpeakerScores: scoreForm.bScores.map(s => ({ memberId: s.memberId, points: s.points })),
-      });
+      if (match.isByePractice) {
+        await matchService.enterResult(match._id, {
+          winnerId: match.teamA._id,
+          loserId: match.teamA._id,
+          teamASpeakerScores: scoreForm.aScores.map(s => ({ memberId: s.memberId, points: s.points })),
+          teamBSpeakerScores: []
+        });
+      } else {
+        if (!match.teamB) {
+          setSavingScore(false);
+          return;
+        }
+        const winnerId = scoreForm.winner === 'A' ? match.teamA._id : match.teamB._id;
+        const loserId = scoreForm.winner === 'A' ? match.teamB._id : match.teamA._id;
+        await matchService.enterResult(match._id, {
+          winnerId,
+          loserId,
+          teamASpeakerScores: scoreForm.aScores.map(s => ({ memberId: s.memberId, points: s.points })),
+          teamBSpeakerScores: scoreForm.bScores.map(s => ({ memberId: s.memberId, points: s.points })),
+        });
+      }
       toast('Match score saved');
       setScoreModalMatch(null);
       await fetchSchedules();
@@ -250,7 +271,7 @@ const MatchmakingPage = () => {
     [schedules, selectedTeamId]
   );
 
-  const scheduleDone = (s: TeamSchedule) => s.matches.length > 0 && s.matches.every((m) => m.isBye || isCompleted(m.status));
+  const scheduleDone = (s: TeamSchedule) => s.matches.length > 0 && s.matches.every((m) => isCompleted(m.status));
 
   const allPrelimScored = useMemo(
     () => schedules.length > 0 && schedules.every((s) => scheduleDone(s)),
@@ -479,7 +500,7 @@ const MatchmakingPage = () => {
                 {schedules.map((schedule) => {
                   const isActive = selectedSchedule?._id === schedule._id;
                   const done = scheduleDone(schedule);
-                  const scoredCount = schedule.matches.filter(m => m.isBye || isCompleted(m.status)).length;
+                  const scoredCount = schedule.matches.filter(m => isCompleted(m.status)).length;
                   return (
                     <button
                       key={schedule._id}
@@ -537,30 +558,24 @@ const MatchmakingPage = () => {
                               <div className="flex justify-between items-center mb-2">
                                 <span className="text-[10px] font-black text-primary/40 uppercase tracking-widest">NODE #{i + 1}</span>
                                 <span className={`text-[8px] font-black px-2 py-1 rounded-full uppercase tracking-widest ${
-                                  match.isBye ? 'bg-slate-100 text-slate-500' :
+                                  match.isByePractice ? 'bg-blue-100 text-blue-600' :
                                   isScored ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
                                 }`}>
-                                  {match.isBye ? 'BYE' : isScored ? 'SCORED' : 'PENDING'}
+                                  {match.isByePractice ? 'BYE' : isScored ? 'SCORED' : 'PENDING'}
                                 </span>
                               </div>
                               <h4 className="text-sm font-bold text-primary leading-tight">
-                                {match.isBye ? 'BYE Round' : `vs ${opponent?.name || '---'}`}
+                                {match.isByePractice ? 'Practice Round — No Opponent' : `vs ${opponent?.name || '---'}`}
                               </h4>
                             </div>
-                            {match.isBye ? (
-                              <div className="p-3 bg-slate-50 text-center">
-                                <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">No opponent — free round</span>
-                              </div>
-                            ) : (
-                              <button
-                                onClick={() => openScoreModal(match, i + 1)}
-                                className="p-3 bg-secondary/30 hover:bg-primary hover:text-white transition-colors text-center"
-                              >
-                                <span className="text-[10px] font-black uppercase tracking-widest text-primary group-hover:text-white">
-                                  {isScored ? 'View / Edit Score' : 'Enter Score'}
-                                </span>
-                              </button>
-                            )}
+                            <button
+                              onClick={() => openScoreModal(match, i + 1)}
+                              className="p-3 bg-secondary/30 hover:bg-primary hover:text-white transition-colors text-center"
+                            >
+                              <span className="text-[10px] font-black uppercase tracking-widest text-primary group-hover:text-white">
+                                {isScored ? 'View / Edit Score' : (match.isByePractice ? 'Score Practice Round' : 'Enter Score')}
+                              </span>
+                            </button>
                           </div>
                           {i < selectedSchedule.matches.length - 1 && <ArrowRight size={18} className="text-primary/20 flex-shrink-0" />}
                         </div>
@@ -596,51 +611,76 @@ const MatchmakingPage = () => {
                 <button onClick={() => setScoreModalMatch(null)} className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-primary/40 hover:bg-border transition-colors"><X size={16}/></button>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                {/* Team A */}
-                {(['A', 'B'] as const).map(side => {
+              <p className="text-[10px] font-black text-amber-600 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2 mb-4">Max 30 points per speaker</p>
+              {scoreModalMatch.match.isByePractice && (
+                <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-xl">
+                  <p className="text-xs font-black text-blue-700">Practice Round — Enter member scores below</p>
+                  <p className="text-[10px] text-blue-500 mt-0.5">Team will automatically receive a WIN for this round</p>
+                  <p className="text-[10px] text-blue-500 mt-0.5">Team score = MAX score among all members</p>
+                </div>
+              )}
+              <div className={`grid ${scoreModalMatch.match.isByePractice ? 'grid-cols-1 max-w-md mx-auto' : 'grid-cols-2'} gap-4`}>
+                {/* Team A & B */}
+                {(scoreModalMatch.match.isByePractice ? ['A'] : ['A', 'B'] as const).map(side => {
                   const team = side === 'A' ? scoreModalMatch.match.teamA : scoreModalMatch.match.teamB;
                   const scores = side === 'A' ? scoreForm.aScores : scoreForm.bScores;
                   const total = scores.reduce((s, m) => s + (m.points || 0), 0);
+                  const maxScore = scores.reduce((mx, m) => Math.max(mx, m.points || 0), 0);
                   const isWinner = scoreForm.winner === side;
+                  const hasOverLimit = scores.some(s => s.points > 30);
                   return (
                     <div key={side} className={`p-4 rounded-2xl border-2 transition-all ${isWinner ? 'border-emerald-300 bg-emerald-50' : 'border-border bg-secondary/20'}`}>
                       <div className="flex items-center justify-between mb-3">
                         <p className="text-xs font-black text-primary truncate">{team?.name}</p>
-                        <div className="flex bg-white rounded-lg p-0.5 border border-border">
-                          <button
-                            onClick={() => setScoreForm(f => ({ ...f, winner: side }))}
-                            className={`px-2 py-1 rounded-md text-[10px] font-black transition-all ${isWinner ? 'bg-emerald-500 text-white' : 'text-primary/40 hover:text-primary'}`}
-                          >Won</button>
-                          <button
-                            onClick={() => setScoreForm(f => ({ ...f, winner: side === 'A' ? 'B' : 'A' }))}
-                            className={`px-2 py-1 rounded-md text-[10px] font-black transition-all ${!isWinner ? 'bg-red-400 text-white' : 'text-primary/40 hover:text-primary'}`}
-                          >Lost</button>
-                        </div>
+                        {!scoreModalMatch.match.isByePractice && (
+                          <div className="flex bg-white rounded-lg p-0.5 border border-border">
+                            <button
+                              onClick={() => setScoreForm(f => ({ ...f, winner: side }))}
+                              className={`px-2 py-1 rounded-md text-[10px] font-black transition-all ${isWinner ? 'bg-emerald-500 text-white' : 'text-primary/40 hover:text-primary'}`}
+                            >Won</button>
+                            <button
+                              onClick={() => setScoreForm(f => ({ ...f, winner: side === 'A' ? 'B' : 'A' }))}
+                              className={`px-2 py-1 rounded-md text-[10px] font-black transition-all ${!isWinner ? 'bg-red-400 text-white' : 'text-primary/40 hover:text-primary'}`}
+                            >Lost</button>
+                          </div>
+                        )}
+                        {scoreModalMatch.match.isByePractice && (
+                          <div className="px-2 py-1 rounded-md text-[10px] font-black bg-blue-100 text-blue-700">PRACTICE ROUND</div>
+                        )}
                       </div>
                       <div className="space-y-2">
                         {scores.map((member, idx) => (
-                          <div key={member.memberId} className="flex items-center gap-2">
-                            <div className="w-5 h-5 rounded-md bg-white border border-border flex items-center justify-center text-[9px] font-black text-primary/40 flex-shrink-0">{idx + 1}</div>
-                            <span className="flex-1 text-xs font-bold text-primary truncate">{member.fullName}</span>
-                            <input
-                              type="number" min={0}
-                              value={member.points || ''}
-                              onChange={e => {
-                                const val = parseInt(e.target.value) || 0;
-                                if (side === 'A') setScoreForm(f => ({ ...f, aScores: f.aScores.map((s, i) => i === idx ? { ...s, points: val } : s) }));
-                                else setScoreForm(f => ({ ...f, bScores: f.bScores.map((s, i) => i === idx ? { ...s, points: val } : s) }));
-                              }}
-                              className="w-16 bg-white border border-border rounded-lg px-2 py-1.5 text-primary font-black text-xs text-center focus:outline-none focus:ring-2 focus:ring-accent/30"
-                              placeholder="0"
-                            />
+                          <div key={member.memberId} className="flex flex-col gap-1">
+                            <div className="flex items-center gap-2">
+                              <div className="w-5 h-5 rounded-md bg-white border border-border flex items-center justify-center text-[9px] font-black text-primary/40 flex-shrink-0">{idx + 1}</div>
+                              <span className="flex-1 text-xs font-bold text-primary truncate">{member.fullName}</span>
+                              <input
+                                type="number" min={0} max={30}
+                                value={member.points || ''}
+                                onChange={e => {
+                                  const raw = parseInt(e.target.value) || 0;
+                                  const val = Math.min(raw, 30);
+                                  if (side === 'A') setScoreForm(f => ({ ...f, aScores: f.aScores.map((s, i) => i === idx ? { ...s, points: val } : s) }));
+                                  else setScoreForm(f => ({ ...f, bScores: f.bScores.map((s, i) => i === idx ? { ...s, points: val } : s) }));
+                                }}
+                                className={`w-16 bg-white border rounded-lg px-2 py-1.5 text-primary font-black text-xs text-center focus:outline-none focus:ring-2 focus:ring-accent/30 ${member.points > 30 ? 'border-red-400' : 'border-border'}`}
+                                placeholder="0"
+                              />
+                            </div>
+                            {member.points > 30 && <p className="text-[9px] text-red-500 font-bold pl-7">Maximum speaker points is 30</p>}
                           </div>
                         ))}
                       </div>
                       <div className="mt-3 pt-3 border-t border-border/50 flex justify-between items-center">
-                        <span className="text-[10px] font-black text-primary/40 uppercase tracking-widest">Total</span>
-                        <span className={`text-lg font-black ${isWinner ? 'text-emerald-600' : 'text-primary'}`}>{total} pts</span>
+                        {scoreModalMatch.match.isByePractice ? (
+                          <><span className="text-[10px] font-black text-blue-500 uppercase tracking-widest">Max Score</span>
+                          <span className="text-lg font-black text-blue-600">{maxScore} pts</span></>
+                        ) : (
+                          <><span className="text-[10px] font-black text-primary/40 uppercase tracking-widest">Total</span>
+                          <span className={`text-lg font-black ${isWinner ? 'text-emerald-600' : 'text-primary'}`}>{total} pts</span></>
+                        )}
                       </div>
+                      {hasOverLimit && <p className="text-[9px] text-red-500 font-bold mt-2">⚠ One or more scores exceed 30 — please correct</p>}
                     </div>
                   );
                 })}
@@ -648,8 +688,12 @@ const MatchmakingPage = () => {
 
               <div className="mt-5 flex justify-end gap-3">
                 <button onClick={() => setScoreModalMatch(null)} className="px-5 py-2.5 rounded-xl border border-border text-primary/50 hover:text-primary text-xs font-black transition-colors">Cancel</button>
-                <button disabled={savingScore} onClick={saveScoreModal} className="px-5 py-2.5 rounded-xl bg-primary text-white hover:bg-accent text-xs font-black transition-colors disabled:opacity-50">
-                  {savingScore ? 'Saving...' : 'Save result'}
+                <button
+                  disabled={savingScore || scoreForm.aScores.some(s => s.points > 30) || scoreForm.bScores.some(s => s.points > 30)}
+                  onClick={saveScoreModal}
+                  className="px-5 py-2.5 rounded-xl bg-primary text-white hover:bg-accent text-xs font-black transition-colors disabled:opacity-50"
+                >
+                  {savingScore ? 'Saving...' : scoreModalMatch.match.isByePractice ? 'Save Practice Scores' : 'Save result'}
                 </button>
               </div>
             </motion.div>
@@ -669,12 +713,14 @@ const MatchmakingPage = () => {
                 <p className="text-xs text-primary/40 font-medium mt-1">{knockoutModalMatch.match.teamA?.name} vs {knockoutModalMatch.match.teamB?.name}</p>
               </div>
 
+              <p className="text-[10px] font-black text-amber-600 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2 mb-4">Max 30 points per speaker</p>
               <div className="grid grid-cols-2 gap-4">
                 {(['A', 'B'] as const).map(side => {
                   const team = side === 'A' ? knockoutModalMatch.match.teamA : knockoutModalMatch.match.teamB;
                   const scores = side === 'A' ? knockoutForm.aScores : knockoutForm.bScores;
                   const total = scores.reduce((s, m) => s + (m.points || 0), 0);
                   const isWinner = knockoutForm.winner === side;
+                  const hasOverLimit = scores.some(s => s.points > 30);
                   return (
                     <div key={side} className={`p-4 rounded-2xl border-2 transition-all ${isWinner ? 'border-emerald-300 bg-emerald-50' : 'border-border bg-secondary/20'}`}>
                       <div className="flex items-center justify-between mb-3">
@@ -692,20 +738,24 @@ const MatchmakingPage = () => {
                       </div>
                       <div className="space-y-2">
                         {scores.map((member, idx) => (
-                          <div key={member.memberId} className="flex items-center gap-2">
-                            <div className="w-5 h-5 rounded-md bg-white border border-border flex items-center justify-center text-[9px] font-black text-primary/40 flex-shrink-0">{idx + 1}</div>
-                            <span className="flex-1 text-xs font-bold text-primary truncate">{member.fullName}</span>
-                            <input
-                              type="number" min={0}
-                              value={member.points || ''}
-                              onChange={e => {
-                                const val = parseInt(e.target.value) || 0;
-                                if (side === 'A') setKnockoutForm(f => ({ ...f, aScores: f.aScores.map((s, i) => i === idx ? { ...s, points: val } : s) }));
-                                else setKnockoutForm(f => ({ ...f, bScores: f.bScores.map((s, i) => i === idx ? { ...s, points: val } : s) }));
-                              }}
-                              className="w-16 bg-white border border-border rounded-lg px-2 py-1.5 text-primary font-black text-xs text-center focus:outline-none focus:ring-2 focus:ring-accent/30"
-                              placeholder="0"
-                            />
+                          <div key={member.memberId} className="flex flex-col gap-1">
+                            <div className="flex items-center gap-2">
+                              <div className="w-5 h-5 rounded-md bg-white border border-border flex items-center justify-center text-[9px] font-black text-primary/40 flex-shrink-0">{idx + 1}</div>
+                              <span className="flex-1 text-xs font-bold text-primary truncate">{member.fullName}</span>
+                              <input
+                                type="number" min={0} max={30}
+                                value={member.points || ''}
+                                onChange={e => {
+                                  const raw = parseInt(e.target.value) || 0;
+                                  const val = Math.min(raw, 30);
+                                  if (side === 'A') setKnockoutForm(f => ({ ...f, aScores: f.aScores.map((s, i) => i === idx ? { ...s, points: val } : s) }));
+                                  else setKnockoutForm(f => ({ ...f, bScores: f.bScores.map((s, i) => i === idx ? { ...s, points: val } : s) }));
+                                }}
+                                className={`w-16 bg-white border rounded-lg px-2 py-1.5 text-primary font-black text-xs text-center focus:outline-none focus:ring-2 focus:ring-accent/30 ${member.points > 30 ? 'border-red-400' : 'border-border'}`}
+                                placeholder="0"
+                              />
+                            </div>
+                            {member.points > 30 && <p className="text-[9px] text-red-500 font-bold pl-7">Maximum speaker points is 30</p>}
                           </div>
                         ))}
                       </div>
@@ -713,6 +763,7 @@ const MatchmakingPage = () => {
                         <span className="text-[10px] font-black text-primary/40 uppercase tracking-widest">Total</span>
                         <span className={`text-lg font-black ${isWinner ? 'text-emerald-600' : 'text-primary'}`}>{total} pts</span>
                       </div>
+                      {hasOverLimit && <p className="text-[9px] text-red-500 font-bold mt-2">⚠ One or more scores exceed 30</p>}
                     </div>
                   );
                 })}
@@ -720,7 +771,11 @@ const MatchmakingPage = () => {
 
               <div className="mt-5 flex justify-end gap-3">
                 <button onClick={() => setKnockoutModalMatch(null)} className="px-6 py-3 rounded-xl border border-border text-primary/50 hover:text-primary text-sm font-black transition-colors">Cancel</button>
-                <button disabled={savingScore} onClick={saveKnockoutModal} className="px-6 py-3 rounded-xl bg-primary text-white hover:bg-accent text-sm font-black transition-colors disabled:opacity-50 flex items-center gap-2">
+                <button
+                  disabled={savingScore || knockoutForm.aScores.some(s => s.points > 30) || knockoutForm.bScores.some(s => s.points > 30)}
+                  onClick={saveKnockoutModal}
+                  className="px-6 py-3 rounded-xl bg-primary text-white hover:bg-accent text-sm font-black transition-colors disabled:opacity-50 flex items-center gap-2"
+                >
                   {savingScore ? 'Saving...' : 'Save & advance winner'} <ArrowRight size={16} />
                 </button>
               </div>

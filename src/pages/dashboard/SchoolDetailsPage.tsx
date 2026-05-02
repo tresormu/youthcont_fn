@@ -30,6 +30,7 @@ const SchoolDetailsPage = () => {
   const [savingTeam, setSavingTeam] = useState<string | null>(null);
   const [speakerInput, setSpeakerInput] = useState('');
   const [addingSpeaker, setAddingSpeaker] = useState(false);
+  const [downloadingReport, setDownloadingReport] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => { fetchData(); }, [schoolId]);
@@ -123,6 +124,45 @@ const SchoolDetailsPage = () => {
   };
 
 
+
+  const handleDownloadReport = async () => {
+    if (!schoolId || !school?.event) return;
+    setDownloadingReport(true);
+    try {
+      const res = await api.get(`/events/${school.event}/schools/${schoolId}/report`);
+      const report = res.data;
+      
+      let csv = `School Name,${report.schoolName}\n`;
+      csv += `Event Name,${report.eventName}\n`;
+      csv += `Grand Total Points,${report.grandTotalPoints}\n\n`;
+
+      report.teams.forEach((team: any) => {
+        csv += `Team:,${team.teamName}\n`;
+        csv += `Wins:,${team.wins},Losses:,${team.losses},Total Team Points:,${team.totalTeamPoints}\n`;
+        csv += `Speaker,Role,Round 1,Round 2,Round 3,Total\n`;
+        team.members.forEach((m: any) => {
+          csv += `${m.name},${m.role},${m.round1},${m.round2},${m.round3},${m.totalPoints}\n`;
+        });
+        csv += `\n`;
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `${report.schoolName.replace(/\s+/g, '_')}_Report.csv`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+      
+      toast('Report downloaded successfully!');
+    } catch {
+      toast('Failed to download report', 'error');
+    } finally {
+      setDownloadingReport(false);
+    }
+  };
   return (
     <div className="space-y-8 pb-20">
       <button onClick={() => navigate(-1)}
@@ -135,10 +175,17 @@ const SchoolDetailsPage = () => {
         <div className="w-14 h-14 bg-accent rounded-[1.5rem] flex items-center justify-center text-white shadow-xl shadow-accent/20 font-black text-xl">
           {school?.name?.charAt(0)}
         </div>
-        <div>
+        <div className="flex-1">
           <h1 className="text-4xl font-black tracking-tight text-primary">{school?.name || '...'}</h1>
           <p className="text-primary/40 font-medium mt-0.5">Manage teams and public speaking representatives</p>
         </div>
+        <button 
+          onClick={handleDownloadReport}
+          disabled={downloadingReport}
+          className="bg-accent text-white px-5 py-3 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-accent/90 transition-all disabled:opacity-50 flex items-center gap-2"
+        >
+          {downloadingReport ? 'Downloading...' : 'Download Report'}
+        </button>
       </div>
 
       {/* Tabs */}

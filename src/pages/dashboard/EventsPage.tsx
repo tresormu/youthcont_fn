@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import eventService from '../../services/eventService';
-import { Plus, Calendar, ChevronRight, Trophy, Trash2, PlayCircle } from 'lucide-react';
+import { Plus, Calendar, ChevronRight, Trophy, Trash2, PlayCircle, AlertTriangle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ConfirmModal } from '../../components/common/ConfirmModal';
 import { useToast } from '../../components/common/Toast';
 
 interface Event {
@@ -31,6 +30,7 @@ const EventsPage = () => {
   const [creating, setCreating] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<Event | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [deleteConfirmName, setDeleteConfirmName] = useState('');
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -81,16 +81,21 @@ const EventsPage = () => {
 
   const handleDelete = async () => {
     if (!deleteTarget) return;
+    if (deleteTarget.status === 'Completed' && deleteConfirmName !== deleteTarget.name) {
+      toast('Tournament name does not match', 'error');
+      return;
+    }
     setDeleting(true);
     try {
       await eventService.deleteEvent(deleteTarget._id);
       setEvents(events.filter(e => e._id !== deleteTarget._id));
       toast('Tournament deleted');
-    } catch {
-      toast('Failed to delete tournament', 'error');
+    } catch (err: any) {
+      toast(err?.response?.data?.message || 'Failed to delete tournament', 'error');
     } finally {
       setDeleting(false);
       setDeleteTarget(null);
+      setDeleteConfirmName('');
     }
   };
 
@@ -144,22 +149,23 @@ const EventsPage = () => {
                     {event.status}
                   </span>
                   {event.status === 'Draft' && (
-                    <>
-                      <button
-                        onClick={(e) => handleStart(e, event._id)}
-                        disabled={starting === event._id}
-                        className="flex items-center gap-1 px-3 py-1 rounded-full bg-emerald-100 text-emerald-600 text-[9px] font-black uppercase tracking-wider hover:bg-emerald-200 transition-all disabled:opacity-60"
-                      >
-                        <PlayCircle size={11} />
-                        {starting === event._id ? '...' : 'Start'}
-                      </button>
-                      <button
-                        onClick={() => setDeleteTarget(event)}
-                        className="w-7 h-7 rounded-xl bg-secondary flex items-center justify-center text-primary/20 hover:bg-destructive/10 hover:text-destructive transition-all"
-                      >
-                        <Trash2 size={13} />
-                      </button>
-                    </>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); handleStart(e, event._id); }}
+                      disabled={starting === event._id}
+                      className="flex items-center gap-1 px-3 py-1 rounded-full bg-emerald-100 text-emerald-600 text-[9px] font-black uppercase tracking-wider hover:bg-emerald-200 transition-all disabled:opacity-60"
+                    >
+                      <PlayCircle size={11} />
+                      {starting === event._id ? '...' : 'Start'}
+                    </button>
+                  )}
+                  {event.status !== 'Bracket Stage' && (
+                    <button
+                      onClick={() => { setDeleteTarget(event); setDeleteConfirmName(''); }}
+                      className="w-7 h-7 rounded-xl bg-secondary flex items-center justify-center text-primary/20 hover:bg-destructive/10 hover:text-destructive transition-all"
+                      title="Delete tournament"
+                    >
+                      <Trash2 size={13} />
+                    </button>
                   )}
                 </div>
 
@@ -249,16 +255,67 @@ const EventsPage = () => {
         )}
       </AnimatePresence>
 
-      <ConfirmModal
-        open={!!deleteTarget}
-        onClose={() => setDeleteTarget(null)}
-        onConfirm={handleDelete}
-        loading={deleting}
-        variant="danger"
-        title="Delete Tournament"
-        message={`Are you sure you want to delete "${deleteTarget?.name}"? This action cannot be undone.`}
-        confirmLabel="Yes, Delete"
-      />
+      <AnimatePresence>
+        {deleteTarget && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              onClick={() => { setDeleteTarget(null); setDeleteConfirmName(''); }}
+              className="absolute inset-0 bg-primary/20 backdrop-blur-sm" />
+            <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative w-full max-w-md bg-white rounded-[2.5rem] p-8 shadow-2xl overflow-hidden">
+              <div className="absolute top-0 left-0 right-0 h-1.5 bg-destructive" />
+
+              <div className="w-12 h-12 bg-destructive/10 rounded-2xl flex items-center justify-center text-destructive mb-5">
+                <Trash2 size={22} />
+              </div>
+
+              <h2 className="text-xl font-black text-primary mb-1">Delete Tournament</h2>
+              <p className="text-sm text-primary/50 font-medium mb-1">
+                You are about to permanently delete
+              </p>
+              <p className="text-sm font-black text-primary mb-4">&ldquo;{deleteTarget.name}&rdquo;</p>
+
+              {deleteTarget.status === 'Completed' ? (
+                <>
+                  <div className="bg-red-50 border border-red-200 rounded-2xl p-4 mb-5">
+                    <p className="text-xs font-black text-red-700 mb-1">⚠ This is a completed tournament</p>
+                    <p className="text-xs text-red-600">All match results, scores, rankings, and school reports will be permanently erased. This cannot be undone.</p>
+                  </div>
+                  <label className="block text-xs font-black uppercase tracking-widest text-primary/40 mb-2">Type the tournament name to confirm</label>
+                  <input
+                    autoFocus
+                    type="text"
+                    placeholder={deleteTarget.name}
+                    value={deleteConfirmName}
+                    onChange={e => setDeleteConfirmName(e.target.value)}
+                    className="w-full px-4 py-3 rounded-2xl bg-secondary border border-transparent focus:outline-none focus:ring-2 focus:ring-destructive/30 font-bold text-sm text-primary mb-5"
+                  />
+                </>
+              ) : (
+                <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 mb-5">
+                  <p className="text-xs text-amber-700 font-medium">All associated schools, teams, and match data will be deleted. This cannot be undone.</p>
+                </div>
+              )}
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => { setDeleteTarget(null); setDeleteConfirmName(''); }}
+                  className="flex-1 py-3.5 rounded-2xl font-black text-sm text-primary/40 hover:bg-secondary transition-all"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleDelete}
+                  disabled={deleting || (deleteTarget.status === 'Completed' && deleteConfirmName !== deleteTarget.name)}
+                  className="flex-1 py-3.5 rounded-2xl font-black text-sm bg-destructive text-white hover:bg-red-700 transition-all disabled:opacity-40"
+                >
+                  {deleting ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mx-auto" /> : 'Delete Permanently'}
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

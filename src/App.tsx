@@ -13,6 +13,7 @@ import ManualAssignPage from './pages/dashboard/ManualAssignPage';
 import BracketPage from './pages/dashboard/BracketPage';
 import RankingsPage from './pages/dashboard/RankingsPage';
 import SchoolDetailsPage from './pages/dashboard/SchoolDetailsPage';
+import TeamDetailsPage from './pages/dashboard/TeamDetailsPage';
 import StaffManagementPage from './pages/dashboard/staff/StaffManagementPage';
 import PublicLandingPage from './pages/public/LandingPage';
 import PublicEventDetail from './pages/public/PublicEventDetail';
@@ -76,6 +77,7 @@ function AppRoutes() {
           <Route path="events/:eventId/manual-assign" element={<ManualAssignPage />} />
           <Route path="events/:eventId/bracket" element={<BracketPage />} />
           <Route path="events/:eventId/rankings" element={<RankingsPage />} />
+          <Route path="events/:eventId/teams/:teamId" element={<TeamDetailsPage />} />
           <Route path="staff" element={
             <AdminRoute>
               <StaffManagementPage />

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import teamService from '../../services/teamService';
+import schoolService from '../../services/schoolService';
 import bracketService from '../../services/bracketService';
 import { useSocket } from '../../context/SocketContext';
 import { Search, Trophy, Medal, Star, FileSpreadsheet, FileText } from 'lucide-react';
@@ -30,6 +31,7 @@ const STAGE_BADGE: Record<string, string> = {
 const RankingsPage = () => {
   const { eventId } = useParams();
   const [rankings, setRankings] = useState<RankingEntry[]>([]);
+  const [schools, setSchools] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTeams, setSelectedTeams] = useState<string[]>([]);
@@ -54,9 +56,13 @@ const RankingsPage = () => {
   const fetchRankings = async () => {
     if (!eventId) return;
     try {
-      const data = await teamService.getRankings(eventId);
+      const [data, schoolsData] = await Promise.all([
+        teamService.getRankings(eventId),
+        schoolService.getSchools(eventId)
+      ]);
       setRankings(data);
-    } catch { toast('Failed to load rankings', 'error'); }
+      setSchools(schoolsData);
+    } catch { toast('Failed to load data', 'error'); }
     finally { setIsLoading(false); }
   };
 
@@ -130,6 +136,10 @@ const RankingsPage = () => {
   );
 
   const top3 = filtered.slice(0, 3);
+
+  const useRoundOf16 = schools.length > 18;
+  const advanceCount = useRoundOf16 ? 16 : 8;
+
 
   return (
     <div className="space-y-8 pb-10">
@@ -253,6 +263,18 @@ const RankingsPage = () => {
               </thead>
               <tbody className="divide-y divide-border/30">
                 {filtered.map((team, idx) => (
+                  <>
+                  {idx === advanceCount && !searchTerm && (
+                    <tr key="cutoff-line" className="bg-slate-50/50">
+                      <td colSpan={6} className="px-7 py-3 text-center">
+                        <div className="flex items-center justify-center gap-4">
+                          <div className="h-px bg-slate-300 flex-1"></div>
+                          <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 bg-slate-100 px-3 py-1 rounded-full">Cutoff Line — Top {advanceCount} Advance to Bracket</span>
+                          <div className="h-px bg-slate-300 flex-1"></div>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
                   <tr 
                     key={team._id} 
                     onClick={() => toggleTeamSelection(team._id)}
@@ -271,7 +293,12 @@ const RankingsPage = () => {
                       </span>
                     </td>
                     <td className="px-7 py-5">
-                      <p className="font-black text-primary text-sm group-hover:text-accent transition-colors">{team.teamName}</p>
+                      <p 
+                        className="font-black text-primary text-sm group-hover:text-accent transition-colors cursor-pointer"
+                        onClick={(e) => { e.stopPropagation(); navigate(\`/dashboard/events/\${eventId}/teams/\${team._id}\`); }}
+                      >
+                        {team.teamName}
+                      </p>
                       <p className="text-[9px] font-black uppercase tracking-widest text-primary/25 mt-0.5">{team.school}</p>
                     </td>
                     <td className="px-7 py-5 text-center">
@@ -288,6 +315,7 @@ const RankingsPage = () => {
                       </span>
                     </td>
                   </tr>
+                  </>
                 ))}
               </tbody>
             </table>

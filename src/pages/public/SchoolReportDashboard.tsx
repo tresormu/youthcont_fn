@@ -14,6 +14,10 @@ interface MatchEntry {
 
 interface Speaker {
   name: string;
+  role: string;
+  round1: number;
+  round2: number;
+  round3: number;
   total_points: number;
   avg_points: number;
 }
@@ -22,6 +26,8 @@ interface TeamData {
   team_id: string;
   team_name: string;
   total_points: number;
+  wins: number;
+  losses: number;
   team_rank: number;
   team_rank_total: number;
   status: string;
@@ -29,6 +35,7 @@ interface TeamData {
   bracket_count: number;
   matches: MatchEntry[];
   speakers: Speaker[];
+  team_grand_total: number;
 }
 
 interface DashboardData {
@@ -37,6 +44,7 @@ interface DashboardData {
   school_rank: number;
   school_rank_total: number;
   total_speaker_points: number;
+  grand_total_speaker_points: number;
   teams: TeamData[];
   expires_at: string;
   generated_at: string;
@@ -49,39 +57,40 @@ const statusColor = (status: string) => {
   return 'bg-gray-100 text-gray-500';
 };
 
-const resultStyle = (result: 'Won' | 'Lost') => {
-  if (result === 'Won') return 'bg-emerald-100 text-emerald-700';
-  return 'bg-red-100 text-red-600';
-};
+const resultStyle = (result: 'Won' | 'Lost') =>
+  result === 'Won' ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-600';
 
 const MatchRow = ({ m }: { m: MatchEntry }) => {
   const margin = m.team_points - m.opponent_points;
+  const isBye = m.opponent_team === 'BYE';
   return (
     <div className="rounded-2xl p-3.5 bg-white border border-gray-100 shadow-sm">
       <div className="flex items-center justify-between mb-1.5">
         <span className="text-xs font-bold text-gray-400 uppercase tracking-wide">{m.match_label}</span>
-        <span className={`text-xs font-black px-2.5 py-1 rounded-full ${resultStyle(m.result)}`}>
-          {m.result}
+        <span className={`text-xs font-black px-2.5 py-1 rounded-full ${isBye ? 'bg-blue-100 text-blue-700' : resultStyle(m.result)}`}>
+          {isBye ? 'Practice WIN' : m.result}
         </span>
       </div>
-      <p className="text-sm font-bold text-gray-800">{m.opponent_team}</p>
-      <div className="flex items-center gap-3 mt-1.5 text-xs">
-        <span className="font-mono font-bold text-gray-600">{m.team_points} – {m.opponent_points}</span>
-        <span className={`font-bold ${margin >= 0 ? 'text-emerald-600' : 'text-red-500'}`}>
-          {margin >= 0 ? `+${margin}` : margin}
-        </span>
-      </div>
+      <p className="text-sm font-bold text-gray-800">{isBye ? 'Practice Round (BYE)' : m.opponent_team}</p>
+      {!isBye && (
+        <div className="flex items-center gap-3 mt-1.5 text-xs">
+          <span className="font-mono font-bold text-gray-600">{m.team_points} – {m.opponent_points}</span>
+          <span className={`font-bold ${margin >= 0 ? 'text-emerald-600' : 'text-red-500'}`}>
+            {margin >= 0 ? `+${margin}` : margin}
+          </span>
+        </div>
+      )}
+      {isBye && (
+        <p className="text-xs text-blue-500 mt-1">Score: {m.team_points} pts (max)</p>
+      )}
     </div>
   );
 };
 
 const TeamCard = ({ team }: { team: TeamData }) => {
   const [expanded, setExpanded] = useState(false);
-
   const prelimMatches = team.matches.filter(m => m.stage === 'Prelim');
   const bracketMatches = team.matches.filter(m => m.stage !== 'Prelim');
-  const wins = team.matches.filter(m => m.result === 'Won').length;
-  const winRate = team.matches.length > 0 ? Math.round((wins / team.matches.length) * 100) : 0;
 
   return (
     <div className="rounded-3xl overflow-hidden shadow-lg" style={{ background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)', border: '1px solid #e2e8f0' }}>
@@ -100,12 +109,9 @@ const TeamCard = ({ team }: { team: TeamData }) => {
               <span className="text-xs font-bold text-blue-600">{team.total_points} pts</span>
               <span className="text-xs text-gray-400">·</span>
               <span className="text-xs text-gray-500">Rank {team.team_rank}/{team.team_rank_total}</span>
-              {team.matches.length > 0 && (
-                <>
-                  <span className="text-xs text-gray-400">·</span>
-                  <span className="text-xs font-bold text-emerald-600">{winRate}% win ({wins}/{team.matches.length})</span>
-                </>
-              )}
+              <span className="text-xs text-gray-400">·</span>
+              <span className="text-xs font-bold text-emerald-600">{team.wins}W</span>
+              <span className="text-xs font-bold text-red-500">{team.losses}L</span>
             </div>
           </div>
         </div>
@@ -114,7 +120,6 @@ const TeamCard = ({ team }: { team: TeamData }) => {
         </div>
       </button>
 
-      {/* Status badge */}
       <div className="px-5 pb-3">
         <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold shadow-sm ${statusColor(team.status)}`}>
           <Award size={12} />
@@ -124,35 +129,28 @@ const TeamCard = ({ team }: { team: TeamData }) => {
 
       {expanded && (
         <div className="border-t border-gray-100 px-5 py-5 space-y-6 bg-gray-50/30">
-        {/* Match history */}
+
+          {/* Match history */}
           {team.matches.length > 0 && (
             <div>
               <div className="flex items-center gap-2 mb-3">
                 <Target size={14} className="text-blue-600" />
                 <p className="text-xs font-black uppercase tracking-widest text-gray-600">Match History</p>
               </div>
-
-              {/* Preliminary rounds — always show section */}
               <div className="mb-4">
                 <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 pl-1">
-                  Preliminary Rounds ({team.prelim_count ?? prelimMatches.length} matches)
+                  Preliminary Rounds ({team.prelim_count} matches)
                 </p>
                 {prelimMatches.length > 0 ? (
-                  <div className="space-y-2">
-                    {prelimMatches.map((m, i) => <MatchRow key={i} m={m} />)}
-                  </div>
+                  <div className="space-y-2">{prelimMatches.map((m, i) => <MatchRow key={i} m={m} />)}</div>
                 ) : (
                   <p className="text-xs text-gray-400 pl-1 italic">No preliminary match records found.</p>
                 )}
               </div>
-
-              {/* Bracket matches */}
               {bracketMatches.length > 0 && (
                 <div>
                   <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 pl-1">Knockout Stage</p>
-                  <div className="space-y-2">
-                    {bracketMatches.map((m, i) => <MatchRow key={i} m={m} />)}
-                  </div>
+                  <div className="space-y-2">{bracketMatches.map((m, i) => <MatchRow key={i} m={m} />)}</div>
                 </div>
               )}
             </div>
@@ -165,16 +163,33 @@ const TeamCard = ({ team }: { team: TeamData }) => {
                 <TrendingUp size={14} className="text-purple-600" />
                 <p className="text-xs font-black uppercase tracking-widest text-gray-600">Speaker Performance</p>
               </div>
-              <div className="space-y-2">
+
+              {/* Table header */}
+              <div className="rounded-2xl overflow-hidden border border-gray-100 shadow-sm">
+                <div className="grid grid-cols-7 bg-gray-800 px-4 py-2">
+                  {['Name', 'Role', 'R1', 'R2', 'R3', 'Total', 'Avg'].map(h => (
+                    <p key={h} className="text-[9px] font-black uppercase tracking-widest text-gray-300">{h}</p>
+                  ))}
+                </div>
                 {team.speakers.map((s, i) => (
-                  <div key={i} className="flex items-center justify-between rounded-2xl px-4 py-3 bg-white border border-gray-100 shadow-sm">
-                    <span className="text-sm font-bold text-gray-800">{s.name}</span>
-                    <div className="text-right">
-                      <p className="text-base font-black text-gray-900">{s.total_points}</p>
-                      <p className="text-xs text-gray-500">avg {s.avg_points}</p>
-                    </div>
+                  <div key={i} className={`grid grid-cols-7 px-4 py-3 items-center ${i % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
+                    <p className="text-sm font-bold text-gray-800 truncate col-span-1">{s.name}</p>
+                    <span className={`text-[9px] font-black uppercase px-2 py-0.5 rounded-full w-fit ${s.role === 'Public Speaker' ? 'bg-purple-100 text-purple-600' : 'bg-gray-100 text-gray-500'}`}>
+                      {s.role === 'Public Speaker' ? 'Public' : 'Speaker'}
+                    </span>
+                    <p className="text-sm font-bold text-gray-700 text-center">{s.round1 || '—'}</p>
+                    <p className="text-sm font-bold text-gray-700 text-center">{s.round2 || '—'}</p>
+                    <p className="text-sm font-bold text-gray-700 text-center">{s.round3 || '—'}</p>
+                    <p className="text-base font-black text-blue-700 text-center">{s.total_points}</p>
+                    <p className="text-xs text-gray-500 text-center">{s.avg_points}</p>
                   </div>
                 ))}
+                {/* Team speaker total row */}
+                <div className="grid grid-cols-7 px-4 py-2.5 bg-blue-50 border-t border-blue-100">
+                  <p className="text-xs font-black text-blue-700 col-span-5">Team Speaker Total</p>
+                  <p className="text-sm font-black text-blue-800 text-center">{team.team_grand_total}</p>
+                  <p></p>
+                </div>
               </div>
             </div>
           )}
@@ -222,10 +237,6 @@ const SchoolReportDashboard = () => {
     finally { setExportingPDF(false); }
   };
 
-  const handleLogout = () => {
-    navigate('/school-report');
-  };
-
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center" style={{ background: 'linear-gradient(160deg, #0f172a 0%, #1e293b 100%)' }}>
       <div className="text-center">
@@ -239,9 +250,7 @@ const SchoolReportDashboard = () => {
     <div className="min-h-screen flex items-center justify-center p-4" style={{ background: 'linear-gradient(160deg, #0f172a 0%, #1e293b 100%)' }}>
       <div className="text-center space-y-4">
         <p className="text-red-400 font-bold">{error}</p>
-        <button onClick={() => navigate('/school-report')} className="text-sm text-blue-400 underline">
-          Back to Login
-        </button>
+        <button onClick={() => navigate('/school-report')} className="text-sm text-blue-400 underline">Back to Login</button>
       </div>
     </div>
   );
@@ -256,9 +265,9 @@ const SchoolReportDashboard = () => {
       <header className="sticky top-0 z-20 backdrop-blur-xl border-b shadow-sm"
         style={{ background: 'rgba(255,255,255,0.8)', borderColor: 'rgba(226,232,240,0.8)' }}>
         <div className="max-w-4xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center justify-between">
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-black uppercase tracking-widest text-blue-600 mb-1">{data.tournament_name}</p>
+              <p className="text-xs font-black uppercase tracking-widest text-blue-600 mb-0.5">{data.tournament_name}</p>
               <h1 className="text-xl font-black text-gray-900 truncate">{data.school_name}</h1>
             </div>
             <div className="flex items-center gap-2 shrink-0">
@@ -268,10 +277,10 @@ const SchoolReportDashboard = () => {
                 className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all disabled:opacity-50 bg-red-50 text-red-600 hover:bg-red-100"
               >
                 <FileText size={13} />
-                <span className="hidden sm:inline">{exportingPDF ? 'Exporting...' : 'PDF'}</span>
+                <span className="hidden sm:inline">{exportingPDF ? 'Exporting...' : 'Download PDF'}</span>
               </button>
               <button
-                onClick={handleLogout}
+                onClick={() => navigate('/school-report')}
                 className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all bg-gray-100 text-gray-600 hover:bg-gray-200"
               >
                 <LogOut size={13} />
@@ -283,6 +292,7 @@ const SchoolReportDashboard = () => {
       </header>
 
       <div className="max-w-4xl mx-auto px-4 py-6 space-y-6 pb-12">
+
         {/* Expiry notice */}
         <div className="flex items-center gap-3 rounded-2xl px-4 py-3.5 text-sm shadow-sm"
           style={{ background: 'linear-gradient(135deg, #fef3c7, #fde68a)', border: '1px solid #fbbf24' }}>
@@ -293,7 +303,7 @@ const SchoolReportDashboard = () => {
         </div>
 
         {/* Summary cards */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
           <div className="rounded-3xl p-5 text-center shadow-lg"
             style={{ background: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)', border: '1px solid #fbbf24' }}>
             <Medal size={24} className="mx-auto text-amber-600 mb-2" />
@@ -305,8 +315,15 @@ const SchoolReportDashboard = () => {
             style={{ background: 'linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%)', border: '1px solid #3b82f6' }}>
             <Trophy size={24} className="mx-auto text-blue-600 mb-2" />
             <p className="text-4xl font-black text-blue-900">{data.total_speaker_points}</p>
-            <p className="text-xs text-blue-700 font-bold mt-1">Total Points</p>
+            <p className="text-xs text-blue-700 font-bold mt-1">Team Points Total</p>
             <p className="text-xs text-blue-600 mt-0.5">{data.teams.length} teams</p>
+          </div>
+          <div className="rounded-3xl p-5 text-center shadow-lg col-span-2 sm:col-span-1"
+            style={{ background: 'linear-gradient(135deg, #f0fdf4 0%, #bbf7d0 100%)', border: '1px solid #22c55e' }}>
+            <TrendingUp size={24} className="mx-auto text-emerald-600 mb-2" />
+            <p className="text-4xl font-black text-emerald-900">{data.grand_total_speaker_points}</p>
+            <p className="text-xs text-emerald-700 font-bold mt-1">Grand Speaker Total</p>
+            <p className="text-xs text-emerald-600 mt-0.5">all members combined</p>
           </div>
         </div>
 
@@ -323,8 +340,16 @@ const SchoolReportDashboard = () => {
           </div>
         </div>
 
+        {/* School grand total banner */}
+        <div className="rounded-3xl p-6 text-center shadow-xl"
+          style={{ background: 'linear-gradient(135deg, #1e293b 0%, #334155 100%)', border: '1px solid #475569' }}>
+          <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-2">Grand Total — All Speaker Points for {data.school_name}</p>
+          <p className="text-5xl font-black text-white">{data.grand_total_speaker_points}</p>
+          <p className="text-slate-400 text-sm mt-2">across all teams and all rounds</p>
+        </div>
+
         {/* Footer */}
-        <div className="text-center text-xs text-gray-400 space-y-1 pt-6">
+        <div className="text-center text-xs text-gray-400 space-y-1 pt-2">
           <p>Generated on {new Date(data.generated_at).toLocaleString()}</p>
           <p className="text-gray-300">Youth Contest · Confidential Report</p>
         </div>
