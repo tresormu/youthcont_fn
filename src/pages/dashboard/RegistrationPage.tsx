@@ -11,7 +11,7 @@ import { useToast } from '../../components/common/Toast';
 interface School {
   _id: string;
   name: string;
-  region?: string;
+  ownerEmail?: string;
   teams: any[];
   publicSpeakers: any[];
   teamCount?: number;
@@ -26,7 +26,7 @@ const RegistrationPage = () => {
   const [showAddSchool, setShowAddSchool] = useState(false);
   const [newSchool, setNewSchool] = useState({
     name: '',
-    region: '',
+    ownerEmail: '',
     teams: [] as { name: string; members: [string, string, string] }[],
     publicSpeakers: [] as { fullName: string }[]
   });
@@ -83,7 +83,7 @@ const RegistrationPage = () => {
         })),
       });
       setShowAddSchool(false);
-      setNewSchool({ name: '', region: '', teams: [], publicSpeakers: [] });
+      setNewSchool({ name: '', ownerEmail: '', teams: [], publicSpeakers: [] });
       toast('School registered successfully!');
       if (!socket?.connected) await fetchData();
     } catch (err: any) {
@@ -200,7 +200,7 @@ const RegistrationPage = () => {
 
                     <h3 className="text-base font-black text-primary mb-0.5">{school.name}</h3>
                     <p className="text-[10px] font-bold text-primary/25 uppercase tracking-wider mb-5">
-                      {school.region || 'Unspecified Region'}
+                      {school.ownerEmail || 'No email provided'}
                     </p>
 
                     <div className="flex items-center justify-between">
@@ -241,10 +241,11 @@ const RegistrationPage = () => {
                           onChange={(e) => setNewSchool({ ...newSchool, name: e.target.value })}
                         />
                         <input
-                          placeholder="Region (Optional)"
+                          type="email"
+                          placeholder="School Owner Email (Optional)"
                           className="w-full bg-white border border-border px-4 py-3 rounded-xl font-bold text-sm focus:ring-2 focus:ring-accent/30 outline-none transition-all"
-                          value={newSchool.region}
-                          onChange={(e) => setNewSchool({ ...newSchool, region: e.target.value })}
+                          value={newSchool.ownerEmail}
+                          onChange={(e) => setNewSchool({ ...newSchool, ownerEmail: e.target.value })}
                         />
                       </div>
 
