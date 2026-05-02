@@ -4,6 +4,7 @@ import matchService from '../../services/matchService';
 import schoolService from '../../services/schoolService';
 import teamService from '../../services/teamService';
 import bracketService from '../../services/bracketService';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { useSocket } from '../../context/SocketContext';
 import { Sword, RotateCcw, ArrowRight, Trophy, Sparkles, CheckCircle2, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -202,8 +203,8 @@ const MatchmakingPage = () => {
           setSavingScore(false);
           return;
         }
-        const winnerId = scoreForm.winner === 'A' ? match.teamA._id : match.teamB._id;
-        const loserId = scoreForm.winner === 'A' ? match.teamB._id : match.teamA._id;
+        const winnerId = scoreForm.winner === 'A' ? match.teamA._id : (match.teamB as Team)._id;
+        const loserId = scoreForm.winner === 'A' ? (match.teamB as Team)._id : match.teamA._id;
         await matchService.enterResult(match._id, {
           winnerId,
           loserId,
@@ -225,7 +226,7 @@ const MatchmakingPage = () => {
     setKnockoutForm({
       winner: aWon ? 'A' : 'B',
       aScores: buildScores(match.teamA, match.teamASpeakerScores),
-      bScores: buildScores(match.teamB, match.teamBSpeakerScores),
+      bScores: buildScores(match.teamB as Team, match.teamBSpeakerScores),
     });
     setKnockoutModalMatch({ match, title });
   };
@@ -236,8 +237,8 @@ const MatchmakingPage = () => {
     if (!match.teamB) return;
     setSavingScore(true);
     try {
-      const winnerId = knockoutForm.winner === 'A' ? match.teamA._id : match.teamB._id;
-      const loserId = knockoutForm.winner === 'A' ? match.teamB._id : match.teamA._id;
+      const winnerId = knockoutForm.winner === 'A' ? match.teamA._id : (match.teamB as Team)._id;
+      const loserId = knockoutForm.winner === 'A' ? (match.teamB as Team)._id : match.teamA._id;
       await matchService.enterResult(match._id, {
         winnerId,
         loserId,
@@ -635,11 +636,11 @@ const MatchmakingPage = () => {
                         {!scoreModalMatch.match.isByePractice && (
                           <div className="flex bg-white rounded-lg p-0.5 border border-border">
                             <button
-                              onClick={() => setScoreForm(f => ({ ...f, winner: side }))}
+                              onClick={() => setScoreForm(f => ({ ...f, winner: side as 'A' | 'B' }))}
                               className={`px-2 py-1 rounded-md text-[10px] font-black transition-all ${isWinner ? 'bg-emerald-500 text-white' : 'text-primary/40 hover:text-primary'}`}
                             >Won</button>
                             <button
-                              onClick={() => setScoreForm(f => ({ ...f, winner: side === 'A' ? 'B' : 'A' }))}
+                              onClick={() => setScoreForm(f => ({ ...f, winner: (side === 'A' ? 'B' : 'A') as 'A' | 'B' }))}
                               className={`px-2 py-1 rounded-md text-[10px] font-black transition-all ${!isWinner ? 'bg-red-400 text-white' : 'text-primary/40 hover:text-primary'}`}
                             >Lost</button>
                           </div>
@@ -727,11 +728,11 @@ const MatchmakingPage = () => {
                         <p className="text-xs font-black text-primary truncate">{team?.name}</p>
                         <div className="flex bg-white rounded-lg p-0.5 border border-border">
                           <button
-                            onClick={() => setKnockoutForm(f => ({ ...f, winner: side }))}
+                            onClick={() => setKnockoutForm(f => ({ ...f, winner: side as 'A' | 'B' }))}
                             className={`px-2 py-1 rounded-md text-[10px] font-black transition-all ${isWinner ? 'bg-emerald-500 text-white' : 'text-primary/40 hover:text-primary'}`}
                           >Won</button>
                           <button
-                            onClick={() => setKnockoutForm(f => ({ ...f, winner: side === 'A' ? 'B' : 'A' }))}
+                            onClick={() => setKnockoutForm(f => ({ ...f, winner: (side === 'A' ? 'B' : 'A') as 'A' | 'B' }))}
                             className={`px-2 py-1 rounded-md text-[10px] font-black transition-all ${!isWinner ? 'bg-red-400 text-white' : 'text-primary/40 hover:text-primary'}`}
                           >Lost</button>
                         </div>

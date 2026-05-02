@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import teamService from '../../services/teamService';
 import schoolService from '../../services/schoolService';
@@ -263,59 +263,58 @@ const RankingsPage = () => {
               </thead>
               <tbody className="divide-y divide-border/30">
                 {filtered.map((team, idx) => (
-                  <>
-                  {idx === advanceCount && !searchTerm && (
-                    <tr key="cutoff-line" className="bg-slate-50/50">
-                      <td colSpan={6} className="px-7 py-3 text-center">
-                        <div className="flex items-center justify-center gap-4">
-                          <div className="h-px bg-slate-300 flex-1"></div>
-                          <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 bg-slate-100 px-3 py-1 rounded-full">Cutoff Line — Top {advanceCount} Advance to Bracket</span>
-                          <div className="h-px bg-slate-300 flex-1"></div>
+                  <React.Fragment key={team._id}>
+                    {idx === advanceCount && !searchTerm && (
+                      <tr className="bg-slate-50/50">
+                        <td colSpan={6} className="px-7 py-3 text-center">
+                          <div className="flex items-center justify-center gap-4">
+                            <div className="h-px bg-slate-300 flex-1"></div>
+                            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 bg-slate-100 px-3 py-1 rounded-full">Cutoff Line — Top {advanceCount} Advance to Bracket</span>
+                            <div className="h-px bg-slate-300 flex-1"></div>
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                    <tr
+                      onClick={() => toggleTeamSelection(team._id)}
+                      className={`hover:bg-accent/3 transition-all group cursor-pointer ${selectedTeams.includes(team._id) ? 'bg-accent/5' : ''}`}
+                    >
+                      <td className="px-7 py-5">
+                        <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all
+                          ${selectedTeams.includes(team._id) ? 'bg-accent border-accent text-white' : 'border-border'}`}>
+                          {selectedTeams.includes(team._id) && <Star size={10} fill="currentColor" />}
                         </div>
                       </td>
+                      <td className="px-7 py-5">
+                        <span className={`w-8 h-8 rounded-xl flex items-center justify-center font-black text-xs
+                          ${idx < 3 ? 'bg-accent text-white' : 'bg-secondary text-primary/40'}`}>
+                          {idx + 1}
+                        </span>
+                      </td>
+                      <td className="px-7 py-5">
+                        <p
+                          className="font-black text-primary text-sm group-hover:text-accent transition-colors cursor-pointer"
+                          onClick={(e) => { e.stopPropagation(); navigate(`/dashboard/events/${eventId}/teams/${team._id}`); }}
+                        >
+                          {team.teamName}
+                        </p>
+                        <p className="text-[9px] font-black uppercase tracking-widest text-primary/25 mt-0.5">{team.school}</p>
+                      </td>
+                      <td className="px-7 py-5 text-center">
+                        <span className="text-xl font-black text-primary">{team.totalPoints}</span>
+                      </td>
+                      <td className="px-7 py-5 text-center">
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-secondary rounded-full text-xs font-black text-primary/50">
+                          {team.matchesWon}<span className="opacity-30">/</span>{team.matchesPlayed}
+                        </span>
+                      </td>
+                      <td className="px-7 py-5 text-right">
+                        <span className={`px-3 py-1.5 rounded-full border text-[9px] font-black uppercase tracking-widest ${STAGE_BADGE[team.furthestStage] || STAGE_BADGE.PRELIMINARY}`}>
+                          {team.furthestStage?.replace('_', ' ')}
+                        </span>
+                      </td>
                     </tr>
-                  )}
-                  <tr 
-                    key={team._id} 
-                    onClick={() => toggleTeamSelection(team._id)}
-                    className={`hover:bg-accent/3 transition-all group cursor-pointer ${selectedTeams.includes(team._id) ? 'bg-accent/5' : ''}`}
-                  >
-                    <td className="px-7 py-5">
-                      <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all
-                        ${selectedTeams.includes(team._id) ? 'bg-accent border-accent text-white' : 'border-border'}`}>
-                        {selectedTeams.includes(team._id) && <Star size={10} fill="currentColor" />}
-                      </div>
-                    </td>
-                    <td className="px-7 py-5">
-                      <span className={`w-8 h-8 rounded-xl flex items-center justify-center font-black text-xs
-                        ${idx < 3 ? 'bg-accent text-white' : 'bg-secondary text-primary/40'}`}>
-                        {idx + 1}
-                      </span>
-                    </td>
-                    <td className="px-7 py-5">
-                      <p 
-                        className="font-black text-primary text-sm group-hover:text-accent transition-colors cursor-pointer"
-                        onClick={(e) => { e.stopPropagation(); navigate(\`/dashboard/events/\${eventId}/teams/\${team._id}\`); }}
-                      >
-                        {team.teamName}
-                      </p>
-                      <p className="text-[9px] font-black uppercase tracking-widest text-primary/25 mt-0.5">{team.school}</p>
-                    </td>
-                    <td className="px-7 py-5 text-center">
-                      <span className="text-xl font-black text-primary">{team.totalPoints}</span>
-                    </td>
-                    <td className="px-7 py-5 text-center">
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-secondary rounded-full text-xs font-black text-primary/50">
-                        {team.matchesWon}<span className="opacity-30">/</span>{team.matchesPlayed}
-                      </span>
-                    </td>
-                    <td className="px-7 py-5 text-right">
-                      <span className={`px-3 py-1.5 rounded-full border text-[9px] font-black uppercase tracking-widest ${STAGE_BADGE[team.furthestStage] || STAGE_BADGE.PRELIMINARY}`}>
-                        {team.furthestStage?.replace('_', ' ')}
-                      </span>
-                    </td>
-                  </tr>
-                  </>
+                  </React.Fragment>
                 ))}
               </tbody>
             </table>

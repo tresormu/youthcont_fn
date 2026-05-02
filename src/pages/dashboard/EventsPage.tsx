@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import eventService from '../../services/eventService';
-import { Plus, Calendar, ChevronRight, Trophy, Trash2, PlayCircle, AlertTriangle } from 'lucide-react';
+import { Plus, Calendar, ChevronRight, Trophy, Trash2, PlayCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useToast } from '../../components/common/Toast';
 
