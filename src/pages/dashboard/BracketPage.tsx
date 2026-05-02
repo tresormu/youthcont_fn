@@ -303,23 +303,25 @@ const BracketPage = () => {
                 </button>
               </div>
 
+              <p className="text-[10px] font-black text-amber-600 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2 mb-4">Max 30 points per speaker</p>
               <div className="grid grid-cols-2 gap-4">
                 {(['A', 'B'] as const).map(side => {
                   const team = side === 'A' ? scoreModal.match.teamA : scoreModal.match.teamB;
                   const scores = side === 'A' ? scoreForm.aScores : scoreForm.bScores;
                   const total = scores.reduce((s, m) => s + (m.points || 0), 0);
                   const isWinner = scoreForm.winner === side;
+                  const hasOverLimit = scores.some(s => s.points > 30);
                   return (
                     <div key={side} className={`p-4 rounded-2xl border-2 transition-all ${isWinner ? 'border-emerald-300 bg-emerald-50' : 'border-border bg-secondary/20'}`}>
                       <div className="flex items-center justify-between mb-3">
                         <p className="text-xs font-black text-primary truncate">{team?.name}</p>
                         <div className="flex bg-white rounded-lg p-0.5 border border-border">
                           <button
-                            onClick={() => setScoreForm(f => ({ ...f, winner: side }))}
+                            onClick={() => setScoreForm(f => ({ ...f, winner: side as 'A' | 'B' }))}
                             className={`px-2 py-1 rounded-md text-[10px] font-black transition-all ${isWinner ? 'bg-emerald-500 text-white' : 'text-primary/40 hover:text-primary'}`}
                           >Won</button>
                           <button
-                            onClick={() => setScoreForm(f => ({ ...f, winner: side === 'A' ? 'B' : 'A' }))}
+                            onClick={() => setScoreForm(f => ({ ...f, winner: (side === 'A' ? 'B' : 'A') as 'A' | 'B' }))}
                             className={`px-2 py-1 rounded-md text-[10px] font-black transition-all ${!isWinner ? 'bg-red-400 text-white' : 'text-primary/40 hover:text-primary'}`}
                           >Lost</button>
                         </div>
@@ -328,20 +330,24 @@ const BracketPage = () => {
                       {scores.length > 0 ? (
                         <div className="space-y-2">
                           {scores.map((member, idx) => (
-                            <div key={member.memberId} className="flex items-center gap-2">
-                              <div className="w-5 h-5 rounded-md bg-white border border-border flex items-center justify-center text-[9px] font-black text-primary/40 flex-shrink-0">{idx + 1}</div>
-                              <span className="flex-1 text-xs font-bold text-primary truncate">{member.fullName}</span>
-                              <input
-                                type="number" min={0}
-                                value={member.points || ''}
-                                onChange={e => {
-                                  const val = parseInt(e.target.value) || 0;
-                                  if (side === 'A') setScoreForm(f => ({ ...f, aScores: f.aScores.map((s, i) => i === idx ? { ...s, points: val } : s) }));
-                                  else setScoreForm(f => ({ ...f, bScores: f.bScores.map((s, i) => i === idx ? { ...s, points: val } : s) }));
-                                }}
-                                className="w-16 bg-white border border-border rounded-lg px-2 py-1.5 text-primary font-black text-xs text-center focus:outline-none focus:ring-2 focus:ring-accent/30"
-                                placeholder="0"
-                              />
+                            <div key={member.memberId} className="flex flex-col gap-1">
+                              <div className="flex items-center gap-2">
+                                <div className="w-5 h-5 rounded-md bg-white border border-border flex items-center justify-center text-[9px] font-black text-primary/40 flex-shrink-0">{idx + 1}</div>
+                                <span className="flex-1 text-xs font-bold text-primary truncate">{member.fullName}</span>
+                                <input
+                                  type="number" min={0} max={30}
+                                  value={member.points || ''}
+                                  onChange={e => {
+                                    const raw = parseInt(e.target.value) || 0;
+                                    const val = Math.min(raw, 30);
+                                    if (side === 'A') setScoreForm(f => ({ ...f, aScores: f.aScores.map((s, i) => i === idx ? { ...s, points: val } : s) }));
+                                    else setScoreForm(f => ({ ...f, bScores: f.bScores.map((s, i) => i === idx ? { ...s, points: val } : s) }));
+                                  }}
+                                  className={`w-16 bg-white border rounded-lg px-2 py-1.5 text-primary font-black text-xs text-center focus:outline-none focus:ring-2 focus:ring-accent/30 ${member.points > 30 ? 'border-red-400' : 'border-border'}`}
+                                  placeholder="0"
+                                />
+                              </div>
+                              {member.points > 30 && <p className="text-[9px] text-red-500 font-bold pl-7">Maximum speaker points is 30</p>}
                             </div>
                           ))}
                         </div>
@@ -353,6 +359,7 @@ const BracketPage = () => {
                         <span className="text-[10px] font-black text-primary/40 uppercase tracking-widest">Total</span>
                         <span className={`text-lg font-black ${isWinner ? 'text-emerald-600' : 'text-primary'}`}>{total} pts</span>
                       </div>
+                      {hasOverLimit && <p className="text-[9px] text-red-500 font-bold mt-2">⚠ One or more scores exceed 30</p>}
                     </div>
                   );
                 })}
@@ -360,7 +367,11 @@ const BracketPage = () => {
 
               <div className="mt-5 flex justify-end gap-3">
                 <button onClick={() => setScoreModal(null)} className="px-5 py-2.5 rounded-xl border border-border text-primary/50 hover:text-primary text-xs font-black transition-colors">Cancel</button>
-                <button disabled={saving} onClick={saveScore} className="px-6 py-2.5 rounded-xl bg-primary text-white hover:bg-accent text-xs font-black transition-colors disabled:opacity-50 flex items-center gap-2">
+                <button
+                  disabled={saving || scoreForm.aScores.some(s => s.points > 30) || scoreForm.bScores.some(s => s.points > 30)}
+                  onClick={saveScore}
+                  className="px-6 py-2.5 rounded-xl bg-primary text-white hover:bg-accent text-xs font-black transition-colors disabled:opacity-50 flex items-center gap-2"
+                >
                   {saving ? 'Saving...' : 'Save & advance winner'} <ArrowRight size={14} />
                 </button>
               </div>
