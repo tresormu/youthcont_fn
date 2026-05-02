@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import matchService from '../../services/matchService';
 import schoolService from '../../services/schoolService';
@@ -58,6 +58,11 @@ const MatchmakingPage = () => {
   const { toast } = useToast();
 
   const [selectedTeamId, setSelectedTeamId] = useState<string | null>(null);
+  const selectedTeamIdRef = useRef<string | null>(null);
+  const setSelectedTeam = (id: string | null) => {
+    selectedTeamIdRef.current = id;
+    setSelectedTeamId(id);
+  };
 
   // Score Modal for Preliminary Match
   const [scoreModalMatch, setScoreModalMatch] = useState<{match: Match, teamIndex: number} | null>(null);
@@ -120,8 +125,8 @@ const MatchmakingPage = () => {
     try {
       const matchupsData = await matchService.getMatchups(eventId);
       setSchedules(matchupsData);
-      if ((resetSelection || !selectedTeamId) && matchupsData.length > 0) {
-        setSelectedTeamId(matchupsData[0]._id);
+      if ((resetSelection || !selectedTeamIdRef.current) && matchupsData.length > 0) {
+        setSelectedTeam(matchupsData[0]._id);
       }
       return matchupsData;
     } catch { toast('Failed to load schedules', 'error'); }
@@ -260,7 +265,7 @@ const MatchmakingPage = () => {
       await matchService.cancelPrelims(eventId);
       localStorage.removeItem(`matchmaking_mode_${eventId}`);
       setSchedules([]);
-      setSelectedTeamId(null);
+      setSelectedTeam(null);
       toast('All matchups reset — event back to Registration Open');
       navigate(`/dashboard/events/${eventId}/registration`);
     } catch { toast('Failed to reset matchups', 'error'); }
@@ -505,7 +510,7 @@ const MatchmakingPage = () => {
                   return (
                     <button
                       key={schedule._id}
-                      onClick={() => setSelectedTeamId(schedule._id)}
+                      onClick={() => setSelectedTeam(schedule._id)}
                       className={`w-full text-left p-3 rounded-2xl border-2 transition-all ${
                         isActive
                           ? 'bg-primary text-white border-primary shadow-lg shadow-primary/20'
