@@ -15,6 +15,8 @@ import prosper from '../../assets/prosper.jpeg';
 import sandrah from '../../assets/sandrah.jpeg';
 
 const team = [
+  { name: 'Mugisha Prosper', role: 'CEO', image: prosper, bio: 'Leads the overall vision and strategic direction of THEYOUTHCONTEST.' },
+  { name: 'Agasaro Uwase Sandrah', role: 'Managing Director', image: sandrah, bio: 'Oversees programs, operations, and implementation across teams and events.' },
   { name: 'Ruhingira Iriza Gianne', role: 'Data Entry', image: gianne, bio: 'Supports accurate and timely entry of tournament data and records.' },
   { name: 'Ivan Klepper', role: 'Head Judge', image: klepper, bio: 'Leads judging quality, consistency, and fairness across rounds.' },
   { name: 'Segikwiye Robert', role: 'Head Judge', image: robert, bio: 'Oversees judging standards and supports adjudication decisions.' },
@@ -24,8 +26,6 @@ const team = [
   { name: 'Mugisha Elisa', role: 'Judge', image: elisa, bio: 'Supports high-quality adjudication and participant development.' },
   { name: 'Atete Linka Divine', role: 'Facilitator', image: linka, bio: 'Facilitates sessions and supports participant engagement and flow.' },
   { name: 'Irakoze Ramona', role: 'Judge', image: ramona, bio: 'Provides fair judgment, scoring, and actionable feedback to speakers.' },
-  { name: 'Prosper', role: 'Judge', image: prosper, bio: 'Supports debate evaluations and contributes to fair, constructive adjudication.' },
-  { name: 'Sandrah', role: 'Facilitator', image: sandrah, bio: 'Guides sessions and helps participants stay engaged, confident, and organized.' },
 ];
 
 const StaffPage = () => (
