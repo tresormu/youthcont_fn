@@ -23,9 +23,9 @@ const PublicNav = () => {
       <nav className="fixed top-0 inset-x-0 z-[100]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 mt-3">
           <div className="bg-white/90 backdrop-blur-xl border border-border/50 rounded-2xl px-4 sm:px-6 h-14 sm:h-16 flex items-center justify-between shadow-lg shadow-black/5">
-            <Link to="/" className="flex items-center gap-2.5 shrink-0">
-              <img src="/LOGO.jpeg" alt="THEYOUTHCONTEST" className="w-8 h-8 sm:w-10 sm:h-10 object-contain" />
-              <span className="text-sm sm:text-base font-black text-primary tracking-tighter">THEYOUTHCONTEST</span>
+            <Link to="/" className="flex items-center gap-2 shrink-0 min-w-0">
+              <img src="/LOGO.jpeg" alt="THEYOUTHCONTEST" className="w-8 h-8 sm:w-10 sm:h-10 object-contain shrink-0" />
+              <span className="text-sm sm:text-base font-black text-primary tracking-tighter truncate">THEYOUTHCONTEST</span>
             </Link>
 
             <div className="hidden md:flex items-center gap-6 text-[11px] font-black uppercase tracking-widest text-primary/40">
@@ -51,7 +51,7 @@ const PublicNav = () => {
                 </Link>
               )}
               <button
-                className="md:hidden w-10 h-10 flex items-center justify-center text-primary/60 hover:text-primary rounded-xl hover:bg-secondary transition-all"
+                className="md:hidden w-11 h-11 flex items-center justify-center text-primary/60 hover:text-primary rounded-xl hover:bg-secondary transition-all"
                 onClick={() => setOpen(!open)}
                 aria-label="Toggle menu"
               >

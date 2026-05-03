@@ -26,12 +26,12 @@ const ParticipantsPage = () => (
     <PublicNav />
 
     {/* Hero Section */}
-    <header className="pt-32 pb-20 px-6">
+    <header className="pt-20 sm:pt-28 pb-12 sm:pb-20 px-5 sm:px-6">
       <div className="max-w-7xl mx-auto text-center">
         <motion.span
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="inline-block px-4 py-1.5 bg-accent/10 border border-accent/20 rounded-full text-accent text-[10px] font-black uppercase tracking-widest mb-6"
+          className="inline-block px-4 py-1.5 bg-accent/10 border border-accent/20 rounded-full text-accent text-[10px] font-black uppercase tracking-widest mb-5"
         >
           Join the Movement
         </motion.span>
@@ -39,7 +39,7 @@ const ParticipantsPage = () => (
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="text-5xl md:text-7xl font-black text-primary mb-6"
+          className="text-3xl sm:text-5xl md:text-7xl font-black text-primary mb-4 sm:mb-6"
         >
           For the <span className="text-accent">Participants</span>
         </motion.h1>
@@ -47,7 +47,7 @@ const ParticipantsPage = () => (
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="text-primary/40 font-bold text-lg max-w-2xl mx-auto mb-10"
+          className="text-primary/40 font-bold text-sm sm:text-lg max-w-2xl mx-auto mb-8 sm:mb-10"
         >
           We've simplified the journey. Whether you're a school or an individual, starting your competition journey has never been easier.
         </motion.p>
@@ -55,9 +55,9 @@ const ParticipantsPage = () => (
     </header>
 
     {/* Process Section */}
-    <section className="py-20 bg-white">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="grid md:grid-cols-2 gap-16 items-center">
+    <section className="py-12 sm:py-20 bg-white">
+      <div className="max-w-7xl mx-auto px-5 sm:px-6">
+        <div className="grid md:grid-cols-2 gap-10 sm:gap-16 items-center">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -65,7 +65,7 @@ const ParticipantsPage = () => (
             className="space-y-8"
           >
             <div>
-              <h2 className="text-4xl font-black text-primary mb-4">How to Access Our Service</h2>
+              <h2 className="text-2xl sm:text-4xl font-black text-primary mb-4">How to Access Our Service</h2>
               <p className="text-primary/40 font-bold leading-relaxed">
                 We believe in human connection. No complex forms or automated bots. Just a simple conversation to get you started.
               </p>

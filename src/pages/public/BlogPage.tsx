@@ -72,10 +72,10 @@ const BlogPage = () => (
   <div className="min-h-screen bg-background">
     <PublicNav />
 
-    <div className="max-w-7xl mx-auto px-6 py-20">
-      <div className="mb-16 text-center">
-        <h1 className="text-5xl font-black text-primary mb-4">The Blog</h1>
-        <p className="text-primary/40 font-bold text-lg max-w-xl mx-auto">
+    <div className="max-w-7xl mx-auto px-5 sm:px-6 py-10 sm:py-20">
+      <div className="mb-10 sm:mb-16 text-center">
+        <h1 className="text-3xl sm:text-5xl font-black text-primary mb-3">The Blog</h1>
+        <p className="text-primary/40 font-bold text-sm sm:text-lg max-w-xl mx-auto">
           Insights, updates, and stories from the world of youth debate and public speaking.
         </p>
       </div>
@@ -87,17 +87,17 @@ const BlogPage = () => (
         className="bg-primary rounded-3xl overflow-hidden mb-12 group cursor-pointer hover:bg-primary/95 transition-all"
       >
         <div className="grid md:grid-cols-2">
-          <div className="h-64 md:h-auto overflow-hidden">
+          <div className="h-56 sm:h-64 md:h-auto overflow-hidden">
             <img src={posts[0].image} alt={posts[0].title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
           </div>
-          <div className="p-10 md:p-14 flex flex-col justify-center">
+          <div className="p-6 sm:p-10 md:p-14 flex flex-col justify-center">
             <span className="inline-block self-start px-4 py-1.5 bg-accent rounded-full text-white text-[10px] font-black uppercase tracking-widest mb-6">
               Featured
             </span>
-            <h2 className="text-3xl md:text-4xl font-black text-white mb-4 leading-tight">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-white mb-3 sm:mb-4 leading-tight">
               {posts[0].title}
             </h2>
-            <p className="text-white/50 font-bold mb-8 max-w-xl">{posts[0].excerpt}</p>
+            <p className="text-white/50 font-bold mb-6 sm:mb-8 max-w-xl">{posts[0].excerpt}</p>
             <div className="flex items-center justify-between mt-auto">
               <div className="flex items-center gap-4 text-white/30 text-xs font-black uppercase tracking-widest">
                 <span>{posts[0].date}</span>
@@ -112,7 +112,7 @@ const BlogPage = () => (
       </motion.div>
 
       {/* Grid */}
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-8">
         {posts.slice(1).map((post, i) => (
           <motion.div
             key={i}

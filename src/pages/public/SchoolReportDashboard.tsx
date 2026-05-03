@@ -165,7 +165,8 @@ const TeamCard = ({ team }: { team: TeamData }) => {
               </div>
 
               {/* Table header */}
-              <div className="rounded-2xl overflow-hidden border border-gray-100 shadow-sm">
+              <div className="rounded-2xl overflow-hidden border border-gray-100 shadow-sm overflow-x-auto">
+               <div className="min-w-[420px]">
                 <div className="grid grid-cols-7 bg-gray-800 px-4 py-2">
                   {['Name', 'Role', 'R1', 'R2', 'R3', 'Total', 'Avg'].map(h => (
                     <p key={h} className="text-[9px] font-black uppercase tracking-widest text-gray-300">{h}</p>
@@ -190,6 +191,7 @@ const TeamCard = ({ team }: { team: TeamData }) => {
                   <p className="text-sm font-black text-blue-800 text-center">{team.team_grand_total}</p>
                   <p></p>
                 </div>
+               </div>
               </div>
             </div>
           )}

@@ -31,12 +31,12 @@ const ServicesPage = () => (
   <div className="min-h-screen bg-background">
     <PublicNav />
 
-    <div className="max-w-7xl mx-auto px-6 py-20">
-      <div className="mb-16 text-center">
+    <div className="max-w-7xl mx-auto px-5 sm:px-6 py-10 sm:py-20">
+      <div className="mb-10 sm:mb-16 text-center">
         <motion.span
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="inline-block px-4 py-1.5 bg-accent/10 border border-accent/20 rounded-full text-accent text-[10px] font-black uppercase tracking-widest mb-6"
+          className="inline-block px-4 py-1.5 bg-accent/10 border border-accent/20 rounded-full text-accent text-[10px] font-black uppercase tracking-widest mb-5"
         >
           What We Offer
         </motion.span>
@@ -44,7 +44,7 @@ const ServicesPage = () => (
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="text-5xl font-black text-primary mb-4"
+          className="text-3xl sm:text-5xl font-black text-primary mb-3"
         >
           Our Services
         </motion.h1>
@@ -52,20 +52,20 @@ const ServicesPage = () => (
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="text-primary/40 font-bold text-lg max-w-2xl mx-auto"
+          className="text-primary/40 font-bold text-sm sm:text-lg max-w-2xl mx-auto"
         >
           We build confident communicators and responsible young leaders through training, competitions, and youth-centered advocacy.
         </motion.p>
       </div>
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-20">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-8 mb-12 sm:mb-20">
         {services.map((service, i) => (
           <motion.div
             key={i}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.1 }}
-            className="bg-white border border-border/50 rounded-3xl p-8 hover:shadow-xl hover:shadow-black/5 hover:-translate-y-1 transition-all duration-300 group"
+            className="bg-white border border-border/50 rounded-3xl p-6 sm:p-8 hover:shadow-xl hover:shadow-black/5 hover:-translate-y-1 transition-all duration-300 group"
           >
             <div className="w-14 h-14 bg-accent/10 rounded-2xl flex items-center justify-center text-accent group-hover:bg-accent group-hover:text-white transition-all mb-6">
               <service.icon size={28} />
@@ -80,9 +80,9 @@ const ServicesPage = () => (
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.6 }}
-        className="bg-primary rounded-3xl p-12 text-center"
+        className="bg-primary rounded-3xl p-8 sm:p-12 text-center"
       >
-        <h2 className="text-3xl font-black text-white mb-4">Ready to Get Started?</h2>
+        <h2 className="text-2xl sm:text-3xl font-black text-white mb-4">Ready to Get Started?</h2>
         <p className="text-white/50 font-bold mb-8 max-w-xl mx-auto">
           Contact us to join upcoming trainings, competitions, and civic engagement programs.
         </p>

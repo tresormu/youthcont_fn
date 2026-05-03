@@ -10,9 +10,9 @@ import fun3 from '../../assets/fun3.jpeg';
 import fun4 from '../../assets/fun4.jpeg';
 import win2 from '../../assets/win2.jpeg';
 import p1 from '../../assets/participant1.jpeg';
-import staff1 from '../../assets/staff1.jpeg';
-import staff2 from '../../assets/staff2.jpeg';
-import staff4 from '../../assets/staff4.jpeg';
+import staff1 from '../../assets/sandrah.jpeg';
+import staff2 from '../../assets/klepper.jpeg';
+import staff4 from '../../assets/queen.jpeg';
 import staffcover from '../../assets/staffcover.jpeg';
 
 const PublicLandingPage = () => (
@@ -151,7 +151,7 @@ const PublicLandingPage = () => (
           <div className="bg-white border border-border/50 rounded-3xl p-6 sm:p-8">
             <p className="text-[10px] font-black uppercase tracking-[0.25em] text-accent mb-3">Who We Are</p>
             <p className="text-sm text-primary/70 font-bold leading-relaxed">
-              THEYOUTHCONTEST (TYC) is a youth development platform dedicated to empowering young people through intellectual engagement, leadership development, and civic participation. We create structured opportunities for youth to sharpen critical thinking, strengthen public expression, and cultivate responsible leadership through debates, public speaking tournaments, conferences, talk shows, and transformative campaigns.
+              THEYOUTHCONTEST (TYC) empowers young people through debate, public speaking, leadership development, and civic engagement, helping them think critically, communicate clearly, and lead responsibly.
             </p>
           </div>
           <div className="bg-white border border-border/50 rounded-3xl p-6 sm:p-8">

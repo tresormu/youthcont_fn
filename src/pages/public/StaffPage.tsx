@@ -2,90 +2,38 @@ import { Users, Shield, Headphones } from 'lucide-react';
 import { motion } from 'framer-motion';
 import PublicNav from '../../components/layout/PublicNav';
 import Footer from '../../components/layout/Footer';
-import staffadmin from '../../assets/staffadmin.jpeg';
-import staff1 from '../../assets/staff1.jpeg';
-import staff2 from '../../assets/staff2.jpeg';
-import staff3 from '../../assets/staff3.jpeg';
-import staff4 from '../../assets/staff4.jpeg';
-import staff5 from '../../assets/staff5.jpeg';
-import staff6 from '../../assets/staff6.jpeg';
-import staff7 from '../../assets/staff7.jpeg';
-import staff8 from '../../assets/staff8.jpeg';
-import staff9 from '../../assets/staff9.jpeg';
+import gianne from '../../assets/Gianne.jpeg';
+import klepper from '../../assets/klepper.jpeg';
+import robert from '../../assets/robert.jpeg';
+import queen from '../../assets/queen.jpeg';
+import gretta from '../../assets/gretta.jpeg';
+import gaella from '../../assets/gaella.jpeg';
+import elisa from '../../assets/elisaa.jpeg';
+import linka from '../../assets/Linka.jpeg';
+import ramona from '../../assets/ramona.jpeg';
 
 const team = [
-  {
-    name: 'Uwase Sandra',
-    role: 'Staff Admin',
-    image: staffadmin,
-    bio: 'Leading THEYOUTHCONTEST with passion and dedication to empower the next generation.',
-  },
-  {
-    name: 'papa wabo',
-    role: 'Tournament Coordinator',
-    image: staff1,
-    bio: 'Ensuring every tournament runs smoothly and fairly for all participating schools.',
-  },
-  {
-    name: 'papa wabo',
-    role: 'Event Specialist',
-    image: staff2,
-    bio: 'Expert in logistics and event management with a focus on student experience.',
-  },
-  {
-    name: 'papa wabo',
-    role: 'Technical Support',
-    image: staff3,
-    bio: 'Providing technical excellence and real-time support for our digital platforms.',
-  },
-  {
-    name: 'papa wabo',
-    role: 'Community Outreach',
-    image: staff4,
-    bio: 'Connecting schools and students to our platform and fostering growth.',
-  },
-  {
-    name: 'papa wabo',
-    role: 'Judging Lead',
-    image: staff5,
-    bio: 'Maintaining the highest standards of competitive debate and fair adjudication.',
-  },
-  {
-    name: 'papa wabo',
-    role: 'Operations Lead',
-    image: staff6,
-    bio: 'Optimizing tournament workflows for maximum efficiency and transparency.',
-  },
-  {
-    name: 'papa wabo',
-    role: 'Data Specialist',
-    image: staff7,
-    bio: 'Analyzing results to improve future competitions and provide deep insights.',
-  },
-  {
-    name: 'papa wabo',
-    role: 'Media Coordinator',
-    image: staff8,
-    bio: 'Capturing the best moments and success stories of every event we host.',
-  },
-  {
-    name: 'papa wabo',
-    role: 'Support Staff',
-    image: staff9,
-    bio: 'Always ready to assist coaches, students, and staff throughout their journey.',
-  },
+  { name: 'Ruhingira Iriza Gianne', role: 'Data Entry', image: gianne, bio: 'Supports accurate and timely entry of tournament data and records.' },
+  { name: 'Ivan Klepper', role: 'Head Judge', image: klepper, bio: 'Leads judging quality, consistency, and fairness across rounds.' },
+  { name: 'Segikwiye Robert', role: 'Head Judge', image: robert, bio: 'Oversees judging standards and supports adjudication decisions.' },
+  { name: 'Gwiza Queen Callixte', role: 'Judge', image: queen, bio: 'Evaluates debates and provides constructive scoring and feedback.' },
+  { name: 'Atete Gretta', role: 'Judge', image: gretta, bio: 'Assesses speaker performance and helps ensure fair outcomes.' },
+  { name: 'Mwiza Gaella', role: 'Judge', image: gaella, bio: 'Judges debate rounds using clear criteria and balanced evaluation.' },
+  { name: 'Mugisha Elisa', role: 'Judge', image: elisa, bio: 'Supports high-quality adjudication and participant development.' },
+  { name: 'Atete Linka Divine', role: 'Facilitator', image: linka, bio: 'Facilitates sessions and supports participant engagement and flow.' },
+  { name: 'Irakoze Ramona', role: 'Judge', image: ramona, bio: 'Provides fair judgment, scoring, and actionable feedback to speakers.' },
 ];
 
 const StaffPage = () => (
   <div className="min-h-screen bg-background">
     <PublicNav />
 
-    <div className="max-w-7xl mx-auto px-6 py-20">
-      <div className="mb-16 text-center">
+    <div className="max-w-7xl mx-auto px-5 sm:px-6 py-10 sm:py-20">
+      <div className="mb-10 sm:mb-16 text-center">
         <motion.span
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="inline-block px-4 py-1.5 bg-accent/10 border border-accent/20 rounded-full text-accent text-[10px] font-black uppercase tracking-widest mb-6"
+          className="inline-block px-4 py-1.5 bg-accent/10 border border-accent/20 rounded-full text-accent text-[10px] font-black uppercase tracking-widest mb-5"
         >
           Meet the Team
         </motion.span>
@@ -93,7 +41,7 @@ const StaffPage = () => (
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="text-5xl font-black text-primary mb-4"
+          className="text-3xl sm:text-5xl font-black text-primary mb-3"
         >
           Our Staff
         </motion.h1>
@@ -101,13 +49,13 @@ const StaffPage = () => (
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="text-primary/40 font-bold text-lg max-w-2xl mx-auto"
+          className="text-primary/40 font-bold text-sm sm:text-lg max-w-2xl mx-auto"
         >
           Passionate professionals dedicated to empowering young voices through competitive debate.
         </motion.p>
       </div>
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-20">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-8 mb-12 sm:mb-20">
         {team.map((member, i) => (
           <motion.div
             key={i}
@@ -132,7 +80,7 @@ const StaffPage = () => (
         ))}
       </div>
 
-      <div className="grid md:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 sm:gap-8">
         {[
           { icon: Shield, title: 'Experienced', desc: 'Years of tournament management expertise' },
           { icon: Users, title: 'Dedicated', desc: 'Committed to student success and growth' },
@@ -143,7 +91,7 @@ const StaffPage = () => (
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6 + i * 0.1 }}
-            className="bg-primary rounded-2xl p-8 text-center"
+            className="bg-primary rounded-2xl p-6 sm:p-8 text-center"
           >
             <div className="w-12 h-12 bg-accent rounded-xl flex items-center justify-center text-white mx-auto mb-4">
               <item.icon size={24} />

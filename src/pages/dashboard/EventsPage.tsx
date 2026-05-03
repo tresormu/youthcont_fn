@@ -102,14 +102,14 @@ const EventsPage = () => {
 
   return (
     <div className="space-y-8">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-4xl font-black tracking-tight text-primary">Tournaments</h1>
-          <p className="text-primary/40 font-medium mt-1">Manage and track your youth debate competitions</p>
+          <h1 className="text-2xl sm:text-4xl font-black tracking-tight text-primary">Tournaments</h1>
+          <p className="text-primary/40 font-medium mt-1 text-sm">Manage and track your youth debate competitions</p>
         </div>
         <button
           onClick={() => setShowCreateModal(true)}
-          className="btn-accent flex items-center gap-2 py-3.5 px-6 rounded-2xl font-black text-sm shadow-xl shadow-accent/20"
+          className="btn-accent flex items-center gap-2 py-3.5 px-6 rounded-2xl font-black text-sm shadow-xl shadow-accent/20 self-start sm:self-auto"
         >
           <Plus size={18} />
           New Tournament
@@ -121,7 +121,7 @@ const EventsPage = () => {
           {[1, 2, 3].map(i => <div key={i} className="h-56 rounded-[2.5rem] bg-white/60 border border-border animate-pulse" />)}
         </div>
       ) : events.length === 0 ? (
-        <div className="bg-white border-2 border-dashed border-border rounded-[3rem] p-20 flex flex-col items-center text-center">
+        <div className="bg-white border-2 border-dashed border-border rounded-[2rem] sm:rounded-[3rem] p-10 sm:p-20 flex flex-col items-center text-center">
           <div className="w-20 h-20 bg-secondary rounded-[2rem] flex items-center justify-center text-primary/20 mb-6">
             <Trophy size={40} />
           </div>
@@ -141,7 +141,7 @@ const EventsPage = () => {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95 }}
                 whileHover={{ y: -4 }}
-                className="premium-card p-8 rounded-[2.5rem] cursor-pointer group relative overflow-hidden"
+                className="premium-card p-6 sm:p-8 rounded-[2rem] sm:rounded-[2.5rem] cursor-pointer group relative overflow-hidden"
                 onClick={() => navigate(`/dashboard/events/${event._id}/registration`)}
               >
                 <div className="absolute top-6 right-6 flex items-center gap-2" onClick={e => e.stopPropagation()}>
@@ -192,21 +192,21 @@ const EventsPage = () => {
       {/* Create Modal */}
       <AnimatePresence>
         {showCreateModal && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
+          <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center sm:p-6">
             <motion.div
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               onClick={() => setShowCreateModal(false)}
               className="absolute inset-0 bg-primary/20 backdrop-blur-sm"
             />
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative w-full max-w-lg bg-white rounded-[3rem] p-10 shadow-2xl overflow-hidden"
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 40 }}
+              className="relative w-full max-w-lg bg-white rounded-t-[2rem] sm:rounded-[3rem] p-7 sm:p-10 shadow-2xl overflow-hidden"
             >
               <div className="absolute top-0 left-0 right-0 h-1.5 bg-accent" />
-              <h2 className="text-3xl font-black text-primary mb-1">Create Tournament</h2>
-              <p className="text-primary/40 font-medium mb-8 text-sm">Initialize a new competition instance</p>
+              <h2 className="text-2xl sm:text-3xl font-black text-primary mb-1">Create Tournament</h2>
+              <p className="text-primary/40 font-medium mb-6 sm:mb-8 text-sm">Initialize a new competition instance</p>
 
               <form onSubmit={handleCreateEvent} className="space-y-5">
                 <div>
@@ -257,12 +257,12 @@ const EventsPage = () => {
 
       <AnimatePresence>
         {deleteTarget && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
+          <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center sm:p-6">
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               onClick={() => { setDeleteTarget(null); setDeleteConfirmName(''); }}
               className="absolute inset-0 bg-primary/20 backdrop-blur-sm" />
-            <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative w-full max-w-md bg-white rounded-[2.5rem] p-8 shadow-2xl overflow-hidden">
+            <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 40 }}
+              className="relative w-full max-w-md bg-white rounded-t-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 shadow-2xl overflow-hidden">
               <div className="absolute top-0 left-0 right-0 h-1.5 bg-destructive" />
 
               <div className="w-12 h-12 bg-destructive/10 rounded-2xl flex items-center justify-center text-destructive mb-5">

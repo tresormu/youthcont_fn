@@ -143,16 +143,16 @@ const RankingsPage = () => {
 
   return (
     <div className="space-y-8 pb-10">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-4xl font-black tracking-tight text-primary">Standings & Results</h1>
-          <p className="text-primary/40 font-medium mt-1">Official rankings and performance metrics for all teams</p>
+          <h1 className="text-2xl sm:text-4xl font-black tracking-tight text-primary">Standings & Results</h1>
+          <p className="text-primary/40 font-medium mt-1 text-sm">Official rankings and performance metrics for all teams</p>
         </div>
-        <div className="flex gap-3">
+        <div className="flex flex-wrap gap-2 sm:gap-3">
           {selectedTeams.length === 8 && (
             <button
               onClick={() => setShowBracketModal(true)}
-              className="btn-accent py-3.5 px-7 rounded-2xl font-black text-sm flex items-center gap-3 shadow-2xl shadow-accent/20 animate-bounce"
+              className="btn-accent py-3 sm:py-3.5 px-5 sm:px-7 rounded-2xl font-black text-sm flex items-center gap-2 shadow-2xl shadow-accent/20 animate-bounce"
             >
               <Trophy size={18} />
               Setup Power 8
@@ -161,7 +161,7 @@ const RankingsPage = () => {
           <button
             onClick={handleExportPDF}
             disabled={exportingPDF || rankings.length === 0}
-            className="px-5 py-3.5 rounded-2xl font-black text-xs text-primary/60 hover:bg-white hover:text-red-500 border border-border transition-all flex items-center gap-2 disabled:opacity-50"
+            className="px-4 sm:px-5 py-3 sm:py-3.5 rounded-2xl font-black text-xs text-primary/60 hover:bg-white hover:text-red-500 border border-border transition-all flex items-center gap-2 disabled:opacity-50"
           >
             <FileText size={16} />
             {exportingPDF ? 'Exporting...' : 'PDF'}
@@ -169,7 +169,7 @@ const RankingsPage = () => {
           <button
             onClick={handleExportExcel}
             disabled={exportingExcel || rankings.length === 0}
-            className="px-5 py-3.5 rounded-2xl font-black text-xs text-primary/60 hover:bg-white hover:text-emerald-600 border border-border transition-all flex items-center gap-2 disabled:opacity-50"
+            className="px-4 sm:px-5 py-3 sm:py-3.5 rounded-2xl font-black text-xs text-primary/60 hover:bg-white hover:text-emerald-600 border border-border transition-all flex items-center gap-2 disabled:opacity-50"
           >
             <FileSpreadsheet size={16} />
             {exportingExcel ? 'Exporting...' : 'Excel'}
@@ -179,7 +179,7 @@ const RankingsPage = () => {
 
       {/* Podium */}
       {!searchTerm && top3.length >= 3 && (
-        <div className="grid grid-cols-3 gap-5 pt-6">
+        <div className="grid grid-cols-3 gap-3 sm:gap-5 pt-4 sm:pt-6">
           {/* 2nd */}
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="mt-8">
             <div className="bg-white border border-border/50 rounded-[2.5rem] p-7 text-center relative overflow-hidden">
