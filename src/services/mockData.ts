@@ -2,7 +2,7 @@
 export const MOCK_USER = {
   _id: 'user_1',
   name: 'Admin User',
-  email: 'admin@youthcontest.com',
+  email: 'admin@theyouthcontest.com',
   role: 'seed_admin',
 };
 
@@ -130,8 +130,8 @@ export const MOCK_BRACKET: Record<string, any> = {
 };
 
 export const MOCK_STAFF: any[] = [
-  { _id: 'user_1', name: 'Admin User', email: 'admin@youthcontest.com', role: 'seed_admin', isActive: true, createdAt: new Date().toISOString() },
-  { _id: 'user_2', name: 'Sarah Connor', email: 'sarah@youthcontest.com', role: 'staff', isActive: true, createdAt: new Date().toISOString() },
+  { _id: 'user_1', name: 'Admin User', email: 'admin@theyouthcontest.com', role: 'seed_admin', isActive: true, createdAt: new Date().toISOString() },
+  { _id: 'user_2', name: 'Sarah Connor', email: 'sarah@theyouthcontest.com', role: 'staff', isActive: true, createdAt: new Date().toISOString() },
 ];
 
 export const MOCK_PUBLIC_SPEAKERS: Record<string, any[]> = {
@@ -160,3 +160,5 @@ export const MOCK_PUBLIC_SPEAKERS: Record<string, any[]> = {
     { _id: 'ps_10', fullName: 'Jack Sparrow', speakerNumber: 1, school: 'school_3', event: 'event_2' },
   ]
 };
+
+

@@ -1,39 +1,29 @@
 import { Link } from 'react-router-dom';
-import { Mic2, Sword, BarChart3, Users, Calendar, Award } from 'lucide-react';
+import { Mic2, Users, Calendar, Megaphone } from 'lucide-react';
 import { motion } from 'framer-motion';
 import PublicNav from '../../components/layout/PublicNav';
 import Footer from '../../components/layout/Footer';
 
 const services = [
   {
-    icon: Calendar,
-    title: 'Tournament Management',
-    desc: 'End-to-end event organization from registration to final rankings with automated scheduling and bracket generation.',
-  },
-  {
     icon: Users,
-    title: 'Team Registration',
-    desc: 'Streamlined registration system for schools, teams, and individual public speakers with real-time capacity tracking.',
-  },
-  {
-    icon: Sword,
-    title: 'Live Scoring',
-    desc: 'Real-time match scoring with instant updates to brackets, rankings, and leaderboards visible to all participants.',
-  },
-  {
-    icon: BarChart3,
-    title: 'Automated Rankings',
-    desc: 'Sophisticated ranking algorithm considering points, head-to-head records, and strength of schedule for fair competition.',
+    title: 'Debate Trainings',
+    desc: 'Our experienced team members train students in debate and critical thinking through guided practice, structured feedback, and meaningful conversations.',
   },
   {
     icon: Mic2,
-    title: 'Public Speaking Events',
-    desc: 'Dedicated support for individual public speaking competitions with specialized judging and scoring systems.',
+    title: 'Public Speaking Trainings',
+    desc: 'We train students in public speaking to build confidence, improve delivery, and help them communicate ideas with clarity and impact.',
   },
   {
-    icon: Award,
-    title: 'Results & Analytics',
-    desc: 'Comprehensive tournament reports, performance analytics, and exportable data for coaches and organizers.',
+    icon: Calendar,
+    title: 'Debate and Public Speaking Competitions',
+    desc: 'After training, we provide real-life competition platforms where students test what they have learned with peers from different schools.',
+  },
+  {
+    icon: Megaphone,
+    title: 'Advocacy Training',
+    desc: 'We equip young people with practical advocacy skills so they can raise awareness, engage communities, and champion positive civic change responsibly.',
   },
 ];
 
@@ -64,7 +54,7 @@ const ServicesPage = () => (
           transition={{ delay: 0.2 }}
           className="text-primary/40 font-bold text-lg max-w-2xl mx-auto"
         >
-          A complete platform designed to power youth debate tournaments from start to finish.
+          We build confident communicators and responsible young leaders through training, competitions, and youth-centered advocacy.
         </motion.p>
       </div>
 
@@ -94,7 +84,7 @@ const ServicesPage = () => (
       >
         <h2 className="text-3xl font-black text-white mb-4">Ready to Get Started?</h2>
         <p className="text-white/50 font-bold mb-8 max-w-xl mx-auto">
-          Contact us to learn how we can support your next tournament.
+          Contact us to join upcoming trainings, competitions, and civic engagement programs.
         </p>
         <Link to="/contact" className="inline-block btn-accent px-8 py-4 rounded-2xl text-sm font-black tracking-tight shadow-2xl shadow-accent/30">
           Contact Us
@@ -106,4 +96,5 @@ const ServicesPage = () => (
 );
 
 export default ServicesPage;
+
 

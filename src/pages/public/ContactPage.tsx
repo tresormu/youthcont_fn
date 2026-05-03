@@ -37,7 +37,7 @@ const ContactPage = () => {
             </div>
             <div>
               <h3 className="text-base font-black text-primary mb-0.5">Email Us</h3>
-              <p className="text-sm text-primary/40 font-bold break-all">contact@youthcontest.com</p>
+              <p className="text-sm text-primary/40 font-bold break-all">theyouthcontest@gmail.com</p>
             </div>
           </div>
           <div className="bg-white border border-border/50 rounded-2xl sm:rounded-3xl p-5 sm:p-8 flex items-center gap-4">
@@ -46,7 +46,7 @@ const ContactPage = () => {
             </div>
             <div>
               <h3 className="text-base font-black text-primary mb-0.5">Call Us</h3>
-              <p className="text-sm text-primary/40 font-bold">+1 (555) 123-4567</p>
+              <p className="text-sm text-primary/40 font-bold">0796870553</p>
             </div>
           </div>
         </div>
@@ -132,3 +132,5 @@ const ContactPage = () => {
 };
 
 export default ContactPage;
+
+

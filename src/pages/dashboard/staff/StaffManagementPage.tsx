@@ -163,7 +163,7 @@ const StaffManagementPage = () => {
                     <Mail size={15} className="absolute left-4 top-1/2 -translate-y-1/2 text-primary/25" />
                     <input type="email" required
                       className="w-full pl-10 pr-5 py-4 rounded-2xl bg-secondary border border-transparent focus:outline-none focus:ring-2 focus:ring-accent/30 font-bold text-sm"
-                      placeholder="staff@youthcontest.com"
+                      placeholder="staff@theyouthcontest.com"
                       value={inviteEmail}
                       onChange={(e) => setInviteEmail(e.target.value)}
                     />
@@ -202,3 +202,5 @@ const StaffManagementPage = () => {
 };
 
 export default StaffManagementPage;
+
+

@@ -78,3 +78,4 @@ const PublicEventsList = () => {
 };
 
 export default PublicEventsList;
+

@@ -8,8 +8,8 @@ const Footer = () => (
         {/* Brand — full width on mobile */}
         <div className="col-span-2 sm:col-span-2 md:col-span-1">
           <div className="flex items-center gap-3 mb-4">
-            <img src="/LOGO.jpeg" alt="Youth Contest" className="w-9 h-9 object-contain" />
-            <span className="text-base font-black tracking-tighter">YOUTH CONTEST</span>
+            <img src="/LOGO.jpeg" alt="THEYOUTHCONTEST" className="w-9 h-9 object-contain" />
+            <span className="text-base font-black tracking-tighter">THEYOUTHCONTEST</span>
           </div>
           <p className="text-white/40 text-sm font-bold leading-relaxed mb-5">
             Empowering young voices through competitive debate and public speaking tournaments.
@@ -66,11 +66,11 @@ const Footer = () => (
           <ul className="space-y-4">
             <li className="flex items-center gap-3 text-sm font-bold text-white/50">
               <Mail size={15} className="text-accent flex-shrink-0" />
-              <span className="break-all">contact@youthcontest.com</span>
+              <span className="break-all">theyouthcontest@gmail.com</span>
             </li>
             <li className="flex items-center gap-3 text-sm font-bold text-white/50">
               <Phone size={15} className="text-accent flex-shrink-0" />
-              +1 (555) 123-4567
+              0796870553
             </li>
           </ul>
         </div>
@@ -78,7 +78,7 @@ const Footer = () => (
 
       <div className="border-t border-white/10 pt-6 pb-2 flex flex-col sm:flex-row items-center justify-between gap-3">
         <p className="text-xs font-black uppercase tracking-widest text-white/20 text-center sm:text-left">
-          © {new Date().getFullYear()} Youth Contest. All rights reserved.
+          © {new Date().getFullYear()} THEYOUTHCONTEST. All rights reserved.
         </p>
         <div className="flex items-center gap-5 text-xs font-black uppercase tracking-widest text-white/20">
           <a href="#" className="hover:text-white/50 transition-colors">Privacy</a>
@@ -90,3 +90,5 @@ const Footer = () => (
 );
 
 export default Footer;
+
+

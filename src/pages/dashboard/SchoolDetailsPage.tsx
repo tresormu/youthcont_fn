@@ -362,3 +362,4 @@ const SchoolDetailsPage = () => {
 
 export default SchoolDetailsPage;
 
+

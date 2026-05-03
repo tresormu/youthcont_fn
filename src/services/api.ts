@@ -7,7 +7,7 @@ const getApiBaseUrl = () => {
 
   // Priority 2: Production fallback
   if (import.meta.env.PROD) {
-    return 'https://api.youthcontest.com/api/v1'; // Update with actual prod URL when known
+    return 'https://api.theyouthcontest.com/api/v1'; // Update with actual prod URL when known
   }
 
   // Priority 3: Local dev fallback
@@ -35,4 +35,6 @@ api.interceptors.response.use(
 );
 
 export default api;
+
+
 

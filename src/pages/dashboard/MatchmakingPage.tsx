@@ -109,7 +109,7 @@ const MatchmakingPage = () => {
     if (socket) {
       socket.emit('joinEvent', eventId);
       socket.on('matchups:created', () => fetchSchedules(true));
-      socket.on('match:updated', () => fetchSchedules(true));
+      socket.on('match:updated', () => fetchSchedules(false));
       return () => { socket.off('matchups:created'); socket.off('match:updated'); };
     }
   }, [eventId]);
@@ -797,3 +797,4 @@ const MatchmakingPage = () => {
 };
 
 export default MatchmakingPage;
+

@@ -18,3 +18,4 @@ export const publicSpeakerService = {
 };
 
 export default publicSpeakerService;
+

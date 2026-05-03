@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Trophy, Users, Sword, BarChart3, ChevronRight, Mic2, Star, ArrowRight, Calendar, Headphones } from 'lucide-react';
+import { Trophy, Users, Sword, ChevronRight, Mic2, Star, ArrowRight, Calendar, Headphones, Megaphone } from 'lucide-react';
 import { motion } from 'framer-motion';
 import PublicNav from '../../components/layout/PublicNav';
 import Footer from '../../components/layout/Footer';
@@ -61,7 +61,7 @@ const PublicLandingPage = () => (
           transition={{ delay: 0.25 }}
           className="text-base sm:text-lg md:text-xl text-primary/40 font-bold max-w-xl mx-auto mb-10 leading-relaxed px-2"
         >
-          Real-time scoring, live brackets, and automated rankings — the complete platform for youth debate tournaments.
+          Empowering youth through debates, public speaking tournaments, conferences, leadership forums, talk shows, and civic campaigns.
         </motion.p>
 
         <motion.div
@@ -107,15 +107,16 @@ const PublicLandingPage = () => (
           <span className="text-[10px] font-black uppercase tracking-[0.3em] text-accent mb-3 block">What We Offer</span>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-primary leading-tight mb-3">Our Services</h2>
           <p className="text-primary/40 font-bold max-w-xl mx-auto text-sm sm:text-base">
-            A complete platform designed to power youth debate tournaments from start to finish.
+            We empower students through training, competitions, and leadership opportunities that strengthen critical thinking and confident expression.
           </p>
         </div>
 
-        <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-5 sm:gap-8 mb-10">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-8 mb-10">
           {[
-            { icon: Mic2, title: 'Dynamic Registration', desc: 'Staff-led entry for schools, teams, and public speakers with real-time availability checks.' },
-            { icon: Sword, title: 'Real-time Scoring', desc: 'Instant win/loss entry during rounds with automatic point accumulation across the field.' },
-            { icon: BarChart3, title: 'Automated Rankings', desc: 'Points, head-to-head, and strength of schedule calculated instantly to build the Power 8.' },
+            { icon: Mic2, title: 'Debate Trainings', desc: 'Experienced mentors help students build stronger arguments and critical thinking through guided conversations.' },
+            { icon: Users, title: 'Public Speaking Trainings', desc: 'Practical coaching that builds confidence, clear expression, and strong stage presence.' },
+            { icon: Sword, title: 'Debate and Public Speaking Competitions', desc: 'Real competition platforms where students apply what they learn with peers from different schools.' },
+            { icon: Megaphone, title: 'Advocacy Training', desc: 'Youth-focused advocacy training that develops civic engagement, ethical leadership, and community impact.' },
           ].map(({ icon: Icon, title, desc }, i) => (
             <motion.div
               key={i}
@@ -140,6 +141,31 @@ const PublicLandingPage = () => (
           <Link to="/services" className="inline-flex items-center gap-2 text-sm font-black text-accent hover:gap-3 transition-all">
             View All Services <ArrowRight size={16} />
           </Link>
+        </div>
+      </div>
+    </section>
+
+    <section className="py-16 sm:py-24 lg:py-28 bg-background">
+      <div className="max-w-7xl mx-auto px-5 sm:px-6">
+        <div className="grid lg:grid-cols-3 gap-6">
+          <div className="bg-white border border-border/50 rounded-3xl p-6 sm:p-8">
+            <p className="text-[10px] font-black uppercase tracking-[0.25em] text-accent mb-3">Who We Are</p>
+            <p className="text-sm text-primary/70 font-bold leading-relaxed">
+              THEYOUTHCONTEST (TYC) is a youth development platform dedicated to empowering young people through intellectual engagement, leadership development, and civic participation. We create structured opportunities for youth to sharpen critical thinking, strengthen public expression, and cultivate responsible leadership through debates, public speaking tournaments, conferences, talk shows, and transformative campaigns.
+            </p>
+          </div>
+          <div className="bg-white border border-border/50 rounded-3xl p-6 sm:p-8">
+            <p className="text-[10px] font-black uppercase tracking-[0.25em] text-accent mb-3">Our Mission</p>
+            <p className="text-sm text-primary/70 font-bold leading-relaxed">
+              Empowering youth through debates, public speaking tournaments, conferences, leadership forums, talk shows, and civic campaigns that cultivate critical thinking, articulate expression, and responsible leadership.
+            </p>
+          </div>
+          <div className="bg-white border border-border/50 rounded-3xl p-6 sm:p-8">
+            <p className="text-[10px] font-black uppercase tracking-[0.25em] text-accent mb-3">Our Vision</p>
+            <p className="text-sm text-primary/70 font-bold leading-relaxed">
+              To build a generation of intellectually fearless, ethically grounded, and globally competent young leaders who shape ideas and drive sustainable transformation.
+            </p>
+          </div>
         </div>
       </div>
     </section>
@@ -296,3 +322,4 @@ const PublicLandingPage = () => (
 );
 
 export default PublicLandingPage;
+

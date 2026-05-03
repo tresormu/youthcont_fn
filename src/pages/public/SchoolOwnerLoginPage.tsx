@@ -47,9 +47,9 @@ const SchoolOwnerLoginPage = () => {
         <div className="text-center mb-10">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-5 shadow-2xl overflow-hidden"
             style={{ background: 'linear-gradient(135deg, #1e40af, #7c3aed)' }}>
-            <img src="/LOGO.jpeg" alt="Youth Contest" className="w-full h-full object-cover" />
+            <img src="/LOGO.jpeg" alt="THEYOUTHCONTEST" className="w-full h-full object-cover" />
           </div>
-          <p className="text-xs font-bold tracking-[0.25em] text-blue-400 uppercase mb-2">Youth Contest</p>
+          <p className="text-xs font-bold tracking-[0.25em] text-blue-400 uppercase mb-2">THEYOUTHCONTEST</p>
           <h1 className="text-3xl font-black text-white leading-tight">School Report</h1>
           <p className="text-slate-400 text-sm mt-2 max-w-xs mx-auto leading-relaxed">
             Enter the credentials from your access email to view your school's tournament results.
@@ -137,3 +137,5 @@ const SchoolOwnerLoginPage = () => {
 };
 
 export default SchoolOwnerLoginPage;
+
+

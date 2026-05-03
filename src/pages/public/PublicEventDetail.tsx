@@ -207,3 +207,4 @@ const StageView = ({ title, matches = [] }: { title: string, matches: any[] }) =
 );
 
 export default PublicEventDetail;
+

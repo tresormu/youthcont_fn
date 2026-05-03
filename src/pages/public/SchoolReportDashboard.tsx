@@ -351,7 +351,7 @@ const SchoolReportDashboard = () => {
         {/* Footer */}
         <div className="text-center text-xs text-gray-400 space-y-1 pt-2">
           <p>Generated on {new Date(data.generated_at).toLocaleString()}</p>
-          <p className="text-gray-300">Youth Contest · Confidential Report</p>
+          <p className="text-gray-300">THEYOUTHCONTEST · Confidential Report</p>
         </div>
       </div>
     </div>
@@ -359,3 +359,5 @@ const SchoolReportDashboard = () => {
 };
 
 export default SchoolReportDashboard;
+
+

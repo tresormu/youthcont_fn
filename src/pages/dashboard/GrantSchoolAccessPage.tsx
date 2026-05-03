@@ -113,3 +113,4 @@ const GrantSchoolAccessPage = () => {
 };
 
 export default GrantSchoolAccessPage;
+

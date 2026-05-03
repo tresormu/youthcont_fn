@@ -60,9 +60,9 @@ const ActivatePage = () => {
         >
           {/* Logo */}
           <div className="flex items-center gap-3">
-            <img src="/LOGO.jpeg" alt="Youth Contest" className="w-12 h-12 object-contain" />
+            <img src="/LOGO.jpeg" alt="THEYOUTHCONTEST" className="w-12 h-12 object-contain" />
             <div>
-              <span className="text-xl font-black tracking-tighter text-primary block leading-none">YOUTH CONTEST</span>
+              <span className="text-xl font-black tracking-tighter text-primary block leading-none">THEYOUTHCONTEST</span>
               <span className="text-[10px] font-black uppercase tracking-[0.2em] text-accent">Account Activation</span>
             </div>
           </div>
@@ -218,3 +218,5 @@ const ActivatePage = () => {
 };
 
 export default ActivatePage;
+
+

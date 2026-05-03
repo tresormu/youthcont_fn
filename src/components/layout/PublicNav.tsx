@@ -24,8 +24,8 @@ const PublicNav = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 mt-3">
           <div className="bg-white/90 backdrop-blur-xl border border-border/50 rounded-2xl px-4 sm:px-6 h-14 sm:h-16 flex items-center justify-between shadow-lg shadow-black/5">
             <Link to="/" className="flex items-center gap-2.5 shrink-0">
-              <img src="/LOGO.jpeg" alt="Youth Contest" className="w-8 h-8 sm:w-10 sm:h-10 object-contain" />
-              <span className="text-sm sm:text-base font-black text-primary tracking-tighter">YOUTH CONTEST</span>
+              <img src="/LOGO.jpeg" alt="THEYOUTHCONTEST" className="w-8 h-8 sm:w-10 sm:h-10 object-contain" />
+              <span className="text-sm sm:text-base font-black text-primary tracking-tighter">THEYOUTHCONTEST</span>
             </Link>
 
             <div className="hidden md:flex items-center gap-6 text-[11px] font-black uppercase tracking-widest text-primary/40">
@@ -125,3 +125,5 @@ const PublicNav = () => {
 };
 
 export default PublicNav;
+
+

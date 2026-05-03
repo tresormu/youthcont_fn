@@ -18,7 +18,7 @@ const team = [
     name: 'Uwase Sandra',
     role: 'Staff Admin',
     image: staffadmin,
-    bio: 'Leading the Youth Contest with passion and dedication to empower the next generation.',
+    bio: 'Leading THEYOUTHCONTEST with passion and dedication to empower the next generation.',
   },
   {
     name: 'papa wabo',
@@ -159,4 +159,6 @@ const StaffPage = () => (
 );
 
 export default StaffPage;
+
+
 

@@ -54,10 +54,10 @@ const DashboardLayout = () => {
       {/* Brand */}
       <div className={cn('p-6 border-b border-border/50 flex items-center', collapsed ? 'justify-center' : 'justify-between')}>
         <Link to="/dashboard/events" className="flex items-center gap-3 group">
-          <img src="/LOGO.jpeg" alt="Youth Contest" className="w-10 h-10 object-contain" />
+          <img src="/LOGO.jpeg" alt="THEYOUTHCONTEST" className="w-10 h-10 object-contain" />
           {!collapsed && (
             <div>
-              <p className="text-sm font-black text-primary tracking-tighter leading-none">YOUTH CONTEST</p>
+              <p className="text-sm font-black text-primary tracking-tighter leading-none">THEYOUTHCONTEST</p>
               <p className="text-[9px] font-black uppercase tracking-[0.2em] text-accent mt-0.5">Staff Dashboard</p>
             </div>
           )}
@@ -218,3 +218,5 @@ const DashboardLayout = () => {
 };
 
 export default DashboardLayout;
+
+

@@ -51,9 +51,9 @@ const LoginPage = () => {
           className="max-w-md w-full mx-auto space-y-7"
         >
           <div className="flex items-center gap-3">
-            <img src="/LOGO.jpeg" alt="Youth Contest" className="w-10 h-10 sm:w-12 sm:h-12 object-contain" />
+            <img src="/LOGO.jpeg" alt="THEYOUTHCONTEST" className="w-10 h-10 sm:w-12 sm:h-12 object-contain" />
             <div>
-              <span className="text-lg sm:text-xl font-black tracking-tighter text-primary block leading-none">YOUTH CONTEST</span>
+              <span className="text-lg sm:text-xl font-black tracking-tighter text-primary block leading-none">THEYOUTHCONTEST</span>
               <span className="text-[10px] font-black uppercase tracking-[0.2em] text-accent">Staff Portal</span>
             </div>
           </div>
@@ -71,7 +71,7 @@ const LoginPage = () => {
             <GlassInput
               label="Email Address"
               type="email"
-              placeholder="staff@youthcontest.com"
+              placeholder="staff@theyouthcontest.com"
               icon={<Mail className="w-4 h-4" />}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -124,7 +124,7 @@ const LoginPage = () => {
           </p>
 
           <p className="text-center text-xs text-muted-foreground">
-            &copy; 2026 The Youth Contest. Internal Platform Only.
+            &copy; 2026 THEYOUTHCONTEST. Internal Platform Only.
           </p>
         </motion.div>
       </div>
@@ -184,3 +184,5 @@ const LoginPage = () => {
 };
 
 export default LoginPage;
+
+
