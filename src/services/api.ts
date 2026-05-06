@@ -1,29 +1,27 @@
 import axios from 'axios';
 
-const getApiBaseUrl = () => {
-  // Priority 1: Vite env var
+const getApiBaseUrl = (): string => {
   const envUrl = import.meta.env.VITE_API_BASE_URL;
-  if (envUrl?.trim()) return envUrl.trim();
-
-  // Priority 2: Production fallback
-  if (import.meta.env.PROD) {
-    return 'https://api.theyouthcontest.com/api/v1'; // Update with actual prod URL when known
+  if (envUrl && envUrl.trim().length > 0) {
+    return envUrl.trim();
   }
 
-  // Priority 3: Local dev fallback
+  if (import.meta.env.PROD) {
+    return 'https://youthcont.andasy.dev/api/v1';
+  }
+
   return 'http://localhost:5000/api/v1';
 };
 
 const api = axios.create({
   baseURL: getApiBaseUrl(),
   timeout: 15000,
-  withCredentials: true, // Crucial for cookie-based auth
+  withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// Response interceptor
 api.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -35,6 +33,3 @@ api.interceptors.response.use(
 );
 
 export default api;
-
-
-
